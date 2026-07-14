@@ -27,7 +27,7 @@ export default function Login(){
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-4">
             <label className="block text-sm mb-1">Usuario</label>
-            <input type="text" {...register('email')} className="w-full border p-2 rounded" placeholder="gerencia" />
+            <input type="text" {...register('email')} className="w-full border p-2 rounded" placeholder="Ingrese su usuario" />
           </div>
           <div className="mb-4">
             <label className="block text-sm mb-1">Contraseña</label>
