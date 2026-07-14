@@ -580,18 +580,35 @@ export default function Forms() {
                 </div>
               )}
 
-              {/* Submit button */}
-              <button
-                type="submit"
-                disabled={loading}
-                className={`w-full sm:w-auto rounded-xl px-6 py-3 text-sm font-bold text-white shadow-sm transition ${
-                  isCritical 
-                    ? 'bg-rose-600 hover:bg-rose-700 focus:ring-rose-500' 
-                    : 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500'
-                } disabled:opacity-60`}
-              >
-                {loading ? 'Procesando y Generando PDF...' : 'Enviar y Generar PDF'}
-              </button>
+              {/* Submit button or Success state */}
+              {pdfUrl ? (
+                <div className="flex flex-col sm:flex-row items-center gap-4 bg-emerald-50 border border-emerald-200 rounded-xl p-4 w-full justify-between">
+                  <div className="flex items-center gap-2 text-emerald-800 font-bold text-sm">
+                    <span className="text-xl">✓</span> ¡Formulario ya enviado y registrado con éxito en la base de datos!
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      openTemplate(selectedTemplate)
+                    }}
+                    className="w-full sm:w-auto rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 text-xs font-bold transition shadow-sm whitespace-nowrap"
+                  >
+                    🔄 Llenar otro formulario
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className={`w-full sm:w-auto rounded-xl px-6 py-3 text-sm font-bold text-white shadow-sm transition ${
+                    isCritical 
+                      ? 'bg-rose-600 hover:bg-rose-700 focus:ring-rose-500' 
+                      : 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500'
+                  } disabled:opacity-60`}
+                >
+                  {loading ? 'Procesando y Generando PDF...' : 'Enviar y Generar PDF'}
+                </button>
+              )}
             </form>
           </div>
 
