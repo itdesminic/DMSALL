@@ -5,9 +5,9 @@ import jwt from 'jsonwebtoken';
 const prisma = new PrismaClient();
 const DEMO_ADMIN = {
   id: 1,
-  name: 'Admin',
-  email: 'admin@empresa.local',
-  password: 'Admin123*',
+  name: 'Gerencia',
+  email: 'gerencia',
+  password: 'DesminicLL26',
   role: 'admin',
 };
 

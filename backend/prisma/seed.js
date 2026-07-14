@@ -3,19 +3,29 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  // Pre-crear el usuario Administrador si no existe
-  const adminExists = await prisma.user.findFirst({ where: { role: 'admin' } });
+  // Eliminar el usuario administrador anterior si existe
+  await prisma.user.deleteMany({ where: { email: 'admin@empresa.local' } });
+
+  // Pre-crear el usuario Administrador nuevo
+  const adminEmail = 'gerencia';
+  const hashed = await bcrypt.hash('DesminicLL26', 10);
+  const adminExists = await prisma.user.findUnique({ where: { email: adminEmail } });
   if (!adminExists) {
-    const hashed = await bcrypt.hash('Admin123*', 10);
     await prisma.user.create({ 
       data: { 
-        name: 'Admin', 
-        email: 'admin@empresa.local', 
+        name: 'Gerencia', 
+        email: adminEmail, 
         password: hashed, 
         role: 'admin' 
       } 
     });
-    console.log('Usuario administrador inicial creado.');
+    console.log('Usuario administrador inicial creado (gerencia).');
+  } else {
+    await prisma.user.update({
+      where: { email: adminEmail },
+      data: { password: hashed, name: 'Gerencia' }
+    });
+    console.log('Usuario administrador actualizado (gerencia).');
   }
 
   // Pre-crear el usuario Anónimo de respaldo
