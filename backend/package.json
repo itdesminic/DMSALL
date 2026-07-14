@@ -11,7 +11,7 @@
     "migrate": "prisma migrate dev --name init",
     "db:seed": "node prisma/seed.js",
     "db:setup": "npm run prisma:generate && npm run migrate && npm run db:seed",
-    "build": "npx --no-install prisma generate && npx --no-install prisma db push && node prisma/seed.js"
+    "build": "npm install && npx --no-install prisma generate && npx --no-install prisma db push && node prisma/seed.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.0",
