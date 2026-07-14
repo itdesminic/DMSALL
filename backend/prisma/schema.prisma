@@ -1,0 +1,181 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                   Int                    @id @default(autoincrement())
+  name                 String?
+  email                String                 @unique
+  password             String
+  role                 String                 @default("user")
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  formSubmissions      FormSubmission[]
+  foodConfirmations    FoodConfirmation[]
+  meetingRoomRequests  MeetingRoomRequest[]
+}
+
+model Role {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+}
+
+model Area {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+  forms Form[]
+}
+
+model Form {
+  id                Int                @id @default(autoincrement())
+  name              String
+  areaId            Int
+  area              Area               @relation(fields: [areaId], references: [id])
+  createdAt         DateTime           @default(now())
+  formFields        FormField[]
+  formSubmissions   FormSubmission[]
+}
+
+model FormField {
+  id      Int     @id @default(autoincrement())
+  formId  Int
+  form    Form    @relation(fields: [formId], references: [id])
+  label   String
+  type    String
+  options String?
+}
+
+model FormSubmission {
+  id        Int      @id @default(autoincrement())
+  formId    Int
+  form      Form     @relation(fields: [formId], references: [id])
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  status    String   @default("draft")
+  answers   String?
+  createdAt DateTime @default(now())
+}
+
+model GeneratedPdf {
+  id        Int      @id @default(autoincrement())
+  submissionId Int
+  path      String
+  createdAt DateTime @default(now())
+}
+
+model FoodMenu {
+  id           Int            @id @default(autoincrement())
+  weekStart    DateTime
+  published    Boolean        @default(false)
+  foodMenuItems FoodMenuItem[]
+}
+
+model FoodMenuItem {
+  id                Int                @id @default(autoincrement())
+  menuId            Int
+  menu              FoodMenu           @relation(fields: [menuId], references: [id])
+  date              DateTime
+  mealTime          String
+  main              String
+  sides             String?
+  drink             String?
+  foodConfirmations FoodConfirmation[]
+}
+
+model FoodConfirmation {
+  id         Int           @id @default(autoincrement())
+  menuItemId Int
+  menuItem   FoodMenuItem  @relation(fields: [menuItemId], references: [id])
+  userId     Int
+  user       User          @relation(fields: [userId], references: [id])
+  notes      String?
+  createdAt  DateTime      @default(now())
+}
+
+model Vehicle {
+  id        Int      @id @default(autoincrement())
+  no        Int?
+  employee  String?
+  position  String?
+  area      String?
+  type      String?
+  plate     String   @unique
+  usage     String?
+  company   String?
+  createdAt DateTime @default(now())
+}
+
+model Radio {
+  id            Int             @id @default(autoincrement())
+  code          String          @unique
+  brand         String?
+  model         String?
+  serial        String?
+  type          String?
+  areaId        Int?
+  userId        Int?
+  status        String          @default("available")
+  assignedAt    DateTime?
+  radioMovements RadioMovement[]
+}
+
+model RadioMovement {
+  id       Int      @id @default(autoincrement())
+  radioId  Int
+  radio    Radio    @relation(fields: [radioId], references: [id])
+  fromArea String?
+  toArea   String?
+  at       DateTime @default(now())
+}
+
+model MeetingRoom {
+  id                  Int                  @id @default(autoincrement())
+  name                String               @unique
+  meetingRoomRequests MeetingRoomRequest[]
+}
+
+model MeetingRoomRequest {
+  id      Int          @id @default(autoincrement())
+  roomId  Int
+  room    MeetingRoom  @relation(fields: [roomId], references: [id])
+  userId  Int
+  user    User         @relation(fields: [userId], references: [id])
+  start   DateTime
+  end     DateTime
+  status  String       @default("requested")
+}
+
+model Notification {
+  id      Int    @id @default(autoincrement())
+  type    String
+  to      String
+  message String
+  status  String @default("pending")
+}
+
+model EmailLog {
+  id      Int    @id @default(autoincrement())
+  to      String
+  subject String
+  body    String
+  sentAt  DateTime?
+  status  String @default("pending")
+}
+
+model SystemSetting {
+  id    Int     @id @default(autoincrement())
+  key   String  @unique
+  value String?
+}
+
+model AuditLog {
+  id      Int      @id @default(autoincrement())
+  userId  Int?
+  action  String
+  at      DateTime @default(now())
+}
