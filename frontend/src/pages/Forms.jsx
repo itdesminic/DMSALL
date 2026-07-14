@@ -53,14 +53,20 @@ export default function Forms() {
         initial[fieldName] = false
       } else if (field.type === 'select' && field.options) {
         const opts = field.options.split(',')
-        // If it is a checklist, let's default to empty or Correcto
-        if (field.options.includes('Correcto')) {
+        if (fieldName === 'Día de la Semana') {
+          const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
+          initial[fieldName] = days[new Date().getDay()]
+        } else if (field.options.includes('Correcto')) {
           initial[fieldName] = 'Correcto (✓)'
         } else {
           initial[fieldName] = opts[0]
         }
       } else {
-        initial[fieldName] = ''
+        if (fieldName === 'Hora') {
+          initial[fieldName] = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+        } else {
+          initial[fieldName] = ''
+        }
       }
     })
     
