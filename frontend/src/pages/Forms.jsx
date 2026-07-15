@@ -336,6 +336,18 @@ export default function Forms() {
                       />
                     </div>
                     <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1">Odómetro (Kilometraje)</label>
+                      <input
+                        type="number"
+                        name="Odómetro (Kilometraje)"
+                        placeholder="Ej: 152000"
+                        value={formData['Odómetro (Kilometraje)'] || ''}
+                        onChange={handleTextChange}
+                        className="w-full rounded-lg border-slate-200 bg-white p-2.5 text-sm focus:border-blue-500 focus:ring-blue-500 border"
+                        required
+                      />
+                    </div>
+                    <div>
                       <label className="block text-xs font-semibold text-slate-700 mb-1">Día de la Semana</label>
                       <select
                         name="Día de la Semana"
@@ -374,19 +386,17 @@ export default function Forms() {
                         required
                       />
                     </div>
-                    {!user && (
-                      <div>
-                        <label className="block text-xs font-semibold text-slate-700 mb-1">Inspección Realizada Por (Tu Nombre)</label>
-                        <input
-                          type="text"
-                          name="Inspección realizada por"
-                          value={formData['Inspección realizada por'] || ''}
-                          onChange={handleTextChange}
-                          className="w-full rounded-lg border-slate-200 bg-white p-2.5 text-sm focus:border-blue-500 focus:ring-blue-500 border"
-                          required
-                        />
-                      </div>
-                    )}
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1">Nombre del Conductor (Inspección realizada por)</label>
+                      <input
+                        type="text"
+                        name="Inspección realizada por"
+                        value={formData['Inspección realizada por'] !== undefined ? formData['Inspección realizada por'] : (user?.name || '')}
+                        onChange={handleTextChange}
+                        className="w-full rounded-lg border-slate-200 bg-white p-2.5 text-sm focus:border-blue-500 focus:ring-blue-500 border"
+                        required
+                      />
+                    </div>
                   </div>
 
                   {/* Checklist Parameters split in two columns */}

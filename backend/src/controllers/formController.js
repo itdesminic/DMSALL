@@ -509,7 +509,7 @@ async function getAnonymousUserId() {
 export async function submitForm(req, res) {
   const { formName, values } = req.body;
   let userId = req.user?.userId;
-  let userName = req.user?.name || req.user?.email || values['Inspección realizada por'] || 'Operador Anónimo';
+  let userName = values['Inspección realizada por'] || req.user?.name || req.user?.email || 'Operador Anónimo';
   
   if (!formName || !values) {
     return res.status(400).json({ error: 'Formulario y datos requeridos' });
