@@ -687,7 +687,7 @@ export default function Forms() {
                   type="submit"
                   disabled={loading}
                   className={`w-full sm:w-auto rounded-xl px-6 py-3 text-sm font-bold text-white shadow-sm transition ${
-                    isCritical 
+                    alertLevel === 'critical' 
                       ? 'bg-rose-600 hover:bg-rose-700 focus:ring-rose-500' 
                       : 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500'
                   } disabled:opacity-60`}
