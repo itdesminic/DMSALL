@@ -68,3 +68,44 @@ export async function createRadio(req, res){
     res.status(500).json({ error: 'Error creando radio' });
   }
 }
+
+export async function updateRadio(req, res) {
+  const { id } = req.params;
+  const { brand, model, site, company, serial, status, comments, assignedTo, channels } = req.body;
+
+  try {
+    const radioId = parseInt(id);
+
+    if (serial) {
+      const existing = await prisma.radio.findFirst({
+        where: {
+          serial,
+          NOT: { id: radioId }
+        }
+      });
+      if (existing) {
+        return res.status(400).json({ error: 'Ya existe otro radio registrado con este código de serie' });
+      }
+    }
+
+    const updated = await prisma.radio.update({
+      where: { id: radioId },
+      data: {
+        brand,
+        model,
+        site,
+        company,
+        serial,
+        status,
+        comments,
+        assignedTo,
+        channels
+      }
+    });
+
+    res.json(updated);
+  } catch (err) {
+    console.error('Error al actualizar radio:', err);
+    res.status(500).json({ error: 'Error al actualizar el radio' });
+  }
+}

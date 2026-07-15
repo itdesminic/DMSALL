@@ -10,6 +10,60 @@ export default function Radios() {
   const [siteFilter, setSiteFilter] = useState('all')
   const [statusFilter, setStatusFilter] = useState('all')
 
+  const [editingRadio, setEditingRadio] = useState(null)
+  const [editFormData, setEditFormData] = useState({
+    brand: '',
+    model: '',
+    site: '',
+    company: '',
+    serial: '',
+    status: '',
+    comments: '',
+    assignedTo: '',
+    channels: ''
+  })
+  const [updating, setUpdating] = useState(false)
+  const [updateMessage, setUpdateMessage] = useState('')
+  const [updateError, setUpdateError] = useState(false)
+
+  const handleEditClick = (radio) => {
+    setEditingRadio(radio)
+    setEditFormData({
+      brand: radio.brand || '',
+      model: radio.model || '',
+      site: radio.site || 'La Libertad',
+      company: radio.company || '',
+      serial: radio.serial || '',
+      status: radio.status || 'bueno',
+      comments: radio.comments || '',
+      assignedTo: radio.assignedTo || '',
+      channels: radio.channels || ''
+    })
+    setUpdateMessage('')
+    setUpdateError(false)
+  }
+
+  const handleUpdateSubmit = async (e) => {
+    e.preventDefault()
+    setUpdating(true)
+    setUpdateMessage('')
+    setUpdateError(false)
+    try {
+      await api.put(`/radios/${editingRadio.id}`, editFormData)
+      setUpdateMessage('Radio actualizado exitosamente')
+      fetchRadios()
+      setTimeout(() => {
+        setEditingRadio(null)
+      }, 1000)
+    } catch (err) {
+      console.error(err)
+      setUpdateError(true)
+      setUpdateMessage(err.response?.data?.error || 'Error al actualizar el radio')
+    } finally {
+      setUpdating(false)
+    }
+  }
+
   const fetchRadios = async () => {
     setLoading(true)
     setError('')
@@ -216,6 +270,7 @@ export default function Radios() {
                   <th className="px-6 py-4">Canales</th>
                   <th className="px-6 py-4">Estado</th>
                   <th className="px-6 py-4">Comentarios</th>
+                  <th className="px-6 py-4 text-right">Acciones</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
@@ -237,11 +292,19 @@ export default function Radios() {
                       <td className="px-6 py-4 text-xs text-slate-500 font-normal max-w-[200px] truncate" title={radio.comments}>
                         {radio.comments || '-'}
                       </td>
+                      <td className="px-6 py-4 text-right">
+                        <button
+                          onClick={() => handleEditClick(radio)}
+                          className="inline-flex items-center gap-1 rounded-lg border border-slate-200 hover:bg-slate-50 transition px-2.5 py-1.5 text-xs font-bold text-slate-700 shadow-sm"
+                        >
+                          ✏️ Editar
+                        </button>
+                      </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="8" className="text-center py-16 text-slate-400">
+                    <td colSpan="9" className="text-center py-16 text-slate-400">
                       <span className="text-3xl block mb-2">📻</span>
                       No se encontraron radios registrados.
                     </td>
@@ -252,6 +315,168 @@ export default function Radios() {
           )}
         </div>
       </div>
+
+      {/* Edit Modal */}
+      {editingRadio && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+          <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4 bg-slate-50">
+              <div>
+                <h3 className="text-lg font-bold text-slate-900">Editar Radio: {editingRadio.serial}</h3>
+                <p className="text-xs text-slate-500 mt-0.5">Modifica los detalles del equipo en el inventario.</p>
+              </div>
+              <button
+                onClick={() => setEditingRadio(null)}
+                className="text-slate-400 hover:text-slate-600 font-bold p-1 rounded-lg hover:bg-slate-200/50 transition"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Form Body */}
+            <form onSubmit={handleUpdateSubmit} className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">Marca</label>
+                  <input
+                    type="text"
+                    value={editFormData.brand}
+                    onChange={(e) => setEditFormData({ ...editFormData, brand: e.target.value })}
+                    className="w-full rounded-xl border border-slate-200 p-2.5 text-sm focus:border-blue-500 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">Modelo</label>
+                  <input
+                    type="text"
+                    value={editFormData.model}
+                    onChange={(e) => setEditFormData({ ...editFormData, model: e.target.value })}
+                    className="w-full rounded-xl border border-slate-200 p-2.5 text-sm focus:border-blue-500 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">Código de Serie (Único)</label>
+                  <input
+                    type="text"
+                    value={editFormData.serial}
+                    onChange={(e) => setEditFormData({ ...editFormData, serial: e.target.value })}
+                    className="w-full rounded-xl border border-slate-200 p-2.5 text-sm font-mono focus:border-blue-500 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">Empresa</label>
+                  <input
+                    type="text"
+                    value={editFormData.company}
+                    onChange={(e) => setEditFormData({ ...editFormData, company: e.target.value })}
+                    className="w-full rounded-xl border border-slate-200 p-2.5 text-sm focus:border-blue-500 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">Sitio / Ubicación</label>
+                  <select
+                    value={editFormData.site}
+                    onChange={(e) => setEditFormData({ ...editFormData, site: e.target.value })}
+                    className="w-full rounded-xl border border-slate-200 p-2.5 text-sm focus:border-blue-500 focus:ring-blue-500 bg-white"
+                  >
+                    <option value="La Libertad">La Libertad</option>
+                    <option value="Limon">Limon</option>
+                    <option value="EBM">EBM</option>
+                    <option value="Pavon">Pavon</option>
+                    <option value="Otro">Otro</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">Estado del Radio</label>
+                  <select
+                    value={editFormData.status}
+                    onChange={(e) => setEditFormData({ ...editFormData, status: e.target.value })}
+                    className="w-full rounded-xl border border-slate-200 p-2.5 text-sm focus:border-blue-500 focus:ring-blue-500 bg-white"
+                  >
+                    <option value="bueno">🟢 Bueno</option>
+                    <option value="dañado">🔴 Dañado</option>
+                    <option value="fallado">🟡 Fallado</option>
+                    <option value="golpeado">🟠 Golpeado</option>
+                    <option value="otro">⚪ Otro</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">A quién está asignado</label>
+                  <input
+                    type="text"
+                    value={editFormData.assignedTo}
+                    onChange={(e) => setEditFormData({ ...editFormData, assignedTo: e.target.value })}
+                    className="w-full rounded-xl border border-slate-200 p-2.5 text-sm focus:border-blue-500 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">Canales requeridos</label>
+                  <input
+                    type="text"
+                    value={editFormData.channels}
+                    onChange={(e) => setEditFormData({ ...editFormData, channels: e.target.value })}
+                    className="w-full rounded-xl border border-slate-200 p-2.5 text-sm focus:border-blue-500 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">Comentarios / Observaciones</label>
+                <textarea
+                  value={editFormData.comments}
+                  onChange={(e) => setEditFormData({ ...editFormData, comments: e.target.value })}
+                  rows="3"
+                  className="w-full rounded-xl border border-slate-200 p-2.5 text-sm focus:border-blue-500 focus:ring-blue-500"
+                />
+              </div>
+
+              {/* Feedback messages */}
+              {updateMessage && (
+                <div className={`p-4 rounded-xl border text-sm font-semibold flex items-center gap-2 ${
+                  updateError ? 'bg-rose-50 border-rose-200 text-rose-800' : 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                }`}>
+                  <span>{updateError ? '❌' : '✓'}</span>
+                  <span>{updateMessage}</span>
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setEditingRadio(null)}
+                  className="px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={updating}
+                  className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-sm font-bold text-white shadow-sm transition disabled:opacity-60"
+                >
+                  {updating ? 'Guardando...' : 'Guardar Cambios'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
