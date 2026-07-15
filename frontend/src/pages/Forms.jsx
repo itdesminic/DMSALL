@@ -166,7 +166,7 @@ export default function Forms() {
       {!selectedTemplate ? (
         // Grid of available templates
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {templates.map((template) => {
+          {templates.filter(t => t.name === 'Revisión de Pre-Uso de Vehiculo Liviano').map((template) => {
             const isVehicleForm = template.name === 'Revisión de Pre-Uso de Vehiculo Liviano'
             return (
               <div
