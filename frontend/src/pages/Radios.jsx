@@ -39,6 +39,50 @@ export default function Radios() {
     return () => clearTimeout(delayDebounceFn)
   }, [searchTerm, siteFilter, statusFilter])
 
+  const exportToCsv = () => {
+    const headers = [
+      'Serie',
+      'Marca',
+      'Modelo',
+      'Sitio',
+      'Empresa',
+      'Asignado A',
+      'Canales',
+      'Estado',
+      'Comentarios',
+      'Fecha Registro'
+    ]
+
+    const rows = radios.map((radio) => {
+      const dateStr = new Date(radio.createdAt).toLocaleDateString('es-ES')
+      return [
+        `"${radio.serial || '-'}"`,
+        `"${radio.brand || '-'}"`,
+        `"${radio.model || '-'}"`,
+        `"${radio.site || '-'}"`,
+        `"${radio.company || '-'}"`,
+        `"${radio.assignedTo || '-'}"`,
+        `"${(radio.channels || '-').replace(/"/g, '""')}"`,
+        `"${radio.status || '-'}"`,
+        `"${(radio.comments || '-').replace(/"/g, '""')}"`,
+        dateStr
+      ]
+    })
+
+    const csvContent = 
+      '\ufeff' + 
+      [headers.join(';'), ...rows.map(e => e.join(';'))].join('\n')
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.setAttribute('href', url)
+    link.setAttribute('download', `reporte_radios_${new Date().toISOString().slice(0,10)}.csv`)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
   const getStatusPill = (status) => {
     switch (status) {
       case 'bueno':
@@ -89,12 +133,20 @@ export default function Radios() {
             Consulta y filtra el estado actual de los equipos de radio registrados.
           </p>
         </div>
-        <Link
-          to="/radios/registro"
-          className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 transition px-4 py-2.5 text-sm font-bold text-white shadow-sm"
-        >
-          ➕ Registrar Nuevo Radio
-        </Link>
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            onClick={exportToCsv}
+            className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm"
+          >
+            📥 Exportar CSV
+          </button>
+          <Link
+            to="/radios/registro"
+            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 transition px-4 py-2.5 text-sm font-bold text-white shadow-sm"
+          >
+            ➕ Registrar Nuevo Radio
+          </Link>
+        </div>
       </div>
 
       {/* Filter and Search Bar */}
