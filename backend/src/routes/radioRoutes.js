@@ -5,6 +5,6 @@ import { authenticate } from '../middlewares/authMiddleware.js';
 const router = express.Router();
 
 router.get('/', authenticate, listRadios);
-router.post('/', authenticate, createRadio);
+router.post('/', createRadio);
 
 export default router;

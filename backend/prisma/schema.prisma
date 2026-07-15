@@ -111,16 +111,18 @@ model Vehicle {
 }
 
 model Radio {
-  id            Int             @id @default(autoincrement())
-  code          String          @unique
-  brand         String?
-  model         String?
-  serial        String?
-  type          String?
-  areaId        Int?
-  userId        Int?
-  status        String          @default("available")
-  assignedAt    DateTime?
+  id             Int             @id @default(autoincrement())
+  brand          String?
+  model          String?
+  site           String?
+  company        String?
+  serial         String?         @unique
+  status         String          @default("bueno")
+  comments       String?
+  assignedTo     String?
+  channels       String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @default(now()) @updatedAt
   radioMovements RadioMovement[]
 }
 

@@ -7,7 +7,12 @@ export default function Layout({ children }){
   const location = useLocation()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
-  const isActive = (path) => location.pathname === path
+  const isActive = (path) => {
+    if (path === '/radios') {
+      return location.pathname.startsWith('/radios')
+    }
+    return location.pathname === path
+  }
 
   const linkClass = (path) => 
     `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${
