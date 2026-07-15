@@ -371,6 +371,17 @@ function generatePdfFile(submissionId, formName, values, userName) {
     doc.moveTo(297, sigY).lineTo(297, sigY + 100).stroke();
     
     doc.moveTo(70, sigY + 65).lineTo(250, sigY + 65).stroke();
+    
+    if (values['Firma'] && values['Firma'].startsWith('data:image/png;base64,')) {
+      try {
+        const base64Data = values['Firma'].replace(/^data:image\/png;base64,/, "");
+        const signatureBuffer = Buffer.from(base64Data, 'base64');
+        doc.image(signatureBuffer, 80, sigY + 5, { width: 160, height: 55, align: 'center' });
+      } catch (e) {
+        console.error('Error insertando firma en PDF:', e);
+      }
+    }
+
     doc.fillColor('#000000').fontSize(8).font('Helvetica-Bold').text('Firma de Conductor / Operador', 70, sigY + 72, { width: 180, align: 'center' });
     doc.fontSize(7.5).font('Helvetica').text(userName || '-', 70, sigY + 82, { width: 180, align: 'center' });
     
@@ -391,10 +402,26 @@ function generatePdfFile(submissionId, formName, values, userName) {
     doc.moveDown(0.5);
     
     Object.entries(values).forEach(([key, value]) => {
+      if (key === 'Firma') return; // Hide base64 text
+      
       const displayValue = typeof value === 'boolean' ? (value ? 'Sí' : 'No') : (value || '-');
       doc.fontSize(11).font('Helvetica-Bold').text(`${key}: `, { goToId: true }).font('Helvetica').text(displayValue);
       doc.moveDown(0.3);
     });
+    
+    // Print signature at the bottom for standard reports if it exists
+    if (values['Firma'] && values['Firma'].startsWith('data:image/png;base64,')) {
+      doc.moveDown(2);
+      doc.fontSize(11).font('Helvetica-Bold').text('Firma del Operador:');
+      doc.moveDown(1);
+      try {
+        const base64Data = values['Firma'].replace(/^data:image\/png;base64,/, "");
+        const signatureBuffer = Buffer.from(base64Data, 'base64');
+        doc.image(signatureBuffer, doc.x, doc.y, { width: 160, height: 55 });
+      } catch (e) {
+        console.error('Error insertando firma en reporte estándar:', e);
+      }
+    }
   }
   
   doc.end();

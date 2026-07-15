@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import api, { getBackendUrl } from '../services/api'
 import { useAuth } from '../context/AuthContext'
+import SignatureCanvas from 'react-signature-canvas'
 
 export default function Forms() {
   const { user } = useAuth()
@@ -17,6 +18,7 @@ export default function Forms() {
   const [alertMessage, setAlertMessage] = useState('')
   const [pdfUrl, setPdfUrl] = useState('')
   const [loading, setLoading] = useState(false)
+  const sigCanvas = useRef({})
 
   // Fetch templates and vehicles from backend on load
   useEffect(() => {
@@ -77,6 +79,9 @@ export default function Forms() {
     setMessage('')
     setAlertMessage('')
     setPdfUrl('')
+    if (sigCanvas.current && typeof sigCanvas.current.clear === 'function') {
+      sigCanvas.current.clear()
+    }
   }
 
   const handleTextChange = (e) => {
@@ -572,6 +577,36 @@ export default function Forms() {
                   })}
                 </div>
               )}
+
+              {/* Signature Block */}
+              <div className="md:col-span-3 mt-4">
+                <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase">Firma del Conductor / Operador (Opcional)</label>
+                <div className="border-2 border-dashed border-slate-300 rounded-xl overflow-hidden bg-white">
+                  <SignatureCanvas 
+                    ref={sigCanvas}
+                    penColor="black"
+                    canvasProps={{className: "w-full h-32 cursor-crosshair touch-none"}}
+                    onEnd={() => {
+                      if (sigCanvas.current && !sigCanvas.current.isEmpty()) {
+                        const dataUrl = sigCanvas.current.getTrimmedCanvas().toDataURL('image/png')
+                        setFormData(prev => ({...prev, Firma: dataUrl}))
+                      }
+                    }}
+                  />
+                </div>
+                <button 
+                  type="button" 
+                  onClick={() => {
+                    sigCanvas.current.clear()
+                    const newData = {...formData}
+                    delete newData.Firma
+                    setFormData(newData)
+                  }} 
+                  className="mt-2 text-xs text-blue-600 font-semibold hover:underline"
+                >
+                  Borrar Firma
+                </button>
+              </div>
 
               {/* Dynamic Safety Alert on the UI */}
               {isCritical && (
