@@ -164,15 +164,10 @@ function drawCrossFatiga(doc, x, y) {
   doc.strokeColor('#000000').lineWidth(1);
 }
 
-function generatePdfFile(submissionId, formName, values, userName) {
-  ensurePdfDir();
-  const filename = `form-${submissionId}.pdf`;
-  const filePath = path.join(PDF_OUTPUT_DIR, filename);
-  
+export function generatePdfToStream(submissionId, formName, values, userName, outputStream) {
   // A4 dimensions: 595 x 842 points
   const doc = new PDFDocument({ size: 'A4', margin: 30 });
-  const stream = fs.createWriteStream(filePath);
-  doc.pipe(stream);
+  doc.pipe(outputStream);
 
   if (formName === 'Revisión de Pre-Uso de Vehiculo Liviano') {
     // ----------------------------------------------------
@@ -427,10 +422,6 @@ function generatePdfFile(submissionId, formName, values, userName) {
   
   doc.end();
 
-  return new Promise((resolve, reject) => {
-    stream.on('finish', () => resolve(`/uploads/pdfs/${filename}`));
-    stream.on('error', reject);
-  });
 }
 
 export async function listForms(req, res) {
@@ -537,14 +528,7 @@ export async function submitForm(req, res) {
     const user = await prisma.user.findUnique({ where: { id: userId } });
     const driverName = (user && user.email !== 'anonimo@empresa.local') ? (user.name || user.email) : userName;
 
-    const pdfUrl = await generatePdfFile(submission.id, formName, values, driverName);
-    
-    await prisma.generatedPdf.create({
-      data: {
-        submissionId: submission.id,
-        path: pdfUrl
-      }
-    });
+    const pdfUrl = `/api/forms/pdf/${submission.id}`;
 
     let message = 'Formulario enviado correctamente.';
     let alertMessage = null;
@@ -586,6 +570,33 @@ export async function listSubmissions(req, res) {
   } catch (err) {
     console.error('Error al listar envíos:', err);
     res.status(500).json({ error: 'Error al obtener envíos de la base de datos' });
+  }
+}
+
+export async function downloadPdf(req, res) {
+  try {
+    const { id } = req.params;
+    const submission = await prisma.formSubmission.findUnique({
+      where: { id: parseInt(id) },
+      include: { form: true, user: true }
+    });
+
+    if (!submission) {
+      return res.status(404).json({ error: 'Envío no encontrado' });
+    }
+
+    const values = JSON.parse(submission.answers);
+    const driverName = (submission.user && submission.user.email !== 'anonimo@empresa.local') 
+      ? (submission.user.name || submission.user.email) 
+      : (values['Inspección realizada por'] || 'Operador Anónimo');
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `inline; filename="form-${submission.id}.pdf"`);
+
+    generatePdfToStream(submission.id, submission.form.name, values, driverName, res);
+  } catch (err) {
+    console.error('Error generando PDF on-demand:', err);
+    res.status(500).json({ error: 'Error generando PDF' });
   }
 }
 

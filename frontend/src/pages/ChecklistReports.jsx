@@ -233,7 +233,7 @@ export default function ChecklistReports() {
                       </td>
                       <td className="px-6 py-4 text-right">
                         <a
-                          href={`${getBackendUrl()}/uploads/pdfs/form-${sub.id}.pdf`}
+                          href={`${getBackendUrl()}/api/forms/pdf/${sub.id}`}
                           target="_blank"
                           rel="noreferrer"
                           className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition px-3 py-1.5 text-xs font-bold text-slate-700 shadow-sm"
