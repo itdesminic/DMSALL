@@ -58,10 +58,8 @@ export default function Forms() {
         if (fieldName === 'Día de la Semana') {
           const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
           initial[fieldName] = days[new Date().getDay()]
-        } else if (field.options.includes('Correcto')) {
-          initial[fieldName] = 'Correcto (✓)'
         } else {
-          initial[fieldName] = opts[0]
+          initial[fieldName] = '' // Force user to manually select
         }
       } else {
         if (fieldName === 'Hora') {
@@ -510,7 +508,7 @@ export default function Forms() {
                           type="button"
                           onClick={() => handleSelectOption('¿Se siente Fatigado?', 'No')}
                           className={`py-2.5 px-1 sm:px-4 sm:py-2 rounded-md transition ${
-                            formData['¿Se siente Fatigado?'] === 'No' || !formData['¿Se siente Fatigado?']
+                            formData['¿Se siente Fatigado?'] === 'No'
                               ? 'bg-emerald-600 text-white shadow-sm'
                               : 'text-slate-600 hover:bg-slate-200'
                           }`}

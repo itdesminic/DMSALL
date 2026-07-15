@@ -19,6 +19,7 @@ const FORM_TEMPLATES = [
       { label: 'Código del Vehículo', type: 'text' },
       { label: 'Hora', type: 'text' },
       { label: 'Día de la Semana', type: 'select', options: 'Lunes,Martes,Miércoles,Jueves,Viernes,Sábado,Domingo' },
+      { label: 'Odómetro (Kilometraje)', type: 'text' },
       { label: 'Gerencia/Superintendencia', type: 'text' },
       { label: 'Supervisor de área', type: 'text' },
       // Parámetros
@@ -445,7 +446,22 @@ export async function listForms(req, res) {
 
     // Dynamic seeding: ensure all templates are in DB
     for (const temp of FORM_TEMPLATES) {
-      await getOrCreateFormByName(temp.name);
+      const form = await getOrCreateFormByName(temp.name);
+      
+      // Sync missing fields dynamically
+      const existingLabels = form.formFields.map(f => f.label);
+      for (const field of temp.fields) {
+        if (!existingLabels.includes(field.label)) {
+          await prisma.formField.create({
+            data: {
+              formId: form.id,
+              label: field.label,
+              type: field.type,
+              options: field.options || null
+            }
+          });
+        }
+      }
     }
     
     const forms = await prisma.form.findMany({ include: { area: true, formFields: true } });
