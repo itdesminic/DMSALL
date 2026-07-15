@@ -104,7 +104,8 @@ export default function Forms() {
     try {
       const response = await api.post('/forms/submit', {
         formName: selectedTemplate,
-        values: formData
+        values: formData,
+        alertLevel: alertLevel
       })
       
       setMessage(response.data.message)
@@ -124,26 +125,40 @@ export default function Forms() {
 
   const activeTemplate = templates.find((item) => item.name === selectedTemplate)
 
-  // Real-time critical safety checks on the frontend
-  const checkCriticalAlert = () => {
-    if (!selectedTemplate || selectedTemplate !== 'Inspección de Vehículo Liviano') return false
+  // Real-time intelligent safety checks on the frontend
+  const getAlertLevel = () => {
+    if (!selectedTemplate || selectedTemplate !== 'Revisión de Pre-Uso de Vehiculo Liviano') return 'none'
 
-    // Check fatigue
-    if (formData['¿Se siente Fatigado?'] === 'Sí') {
-      return true
-    }
+    // Critical Points: 1, 2, 7, 8, 9, 16, 23
+    const criticalRegex = /^(1\.|2\.|7\.|8\.|9\.|16\.|23\.)/
 
-    // Check if any checklist item is marked as Incorrecto
-    let hasIncorrect = false
+    if (formData['¿Se siente Fatigado?'] === 'Sí') return 'critical'
+
+    let hasCriticalError = false
+    let hasWarningError = false
+
     Object.entries(formData).forEach(([key, value]) => {
-      if (key.match(/^\d+\./) && value === 'Incorrecto (X)') {
-        hasIncorrect = true
+      if (value === 'Incorrecto (X)') {
+        if (criticalRegex.test(key)) {
+          hasCriticalError = true
+        } else {
+          hasWarningError = true
+        }
       }
     })
-    return hasIncorrect
+
+    if (hasCriticalError) return 'critical'
+    if (hasWarningError) return 'warning'
+    
+    // Only show "good" if they actually started filling it out (to avoid showing "good" on an empty form)
+    const checklistItemsFilled = Object.entries(formData).filter(([key, value]) => key.match(/^\d+\./) && value !== '').length
+    if (checklistItemsFilled > 0) return 'good'
+    
+    return 'none'
   }
 
-  const isCritical = checkCriticalAlert()
+  const alertLevel = getAlertLevel()
+
 
   if (loadingTemplates) {
     return (
@@ -617,13 +632,35 @@ export default function Forms() {
               </div>
 
               {/* Dynamic Safety Alert on the UI */}
-              {isCritical && (
+              {alertLevel === 'critical' && (
                 <div className="rounded-xl border border-rose-300 bg-rose-50 p-4 text-sm text-rose-800 flex items-start gap-3 animate-bounce">
-                  <span className="text-xl">⚠️</span>
+                  <span className="text-xl">🛑</span>
                   <div>
                     <h4 className="font-bold">¡ALERTA CRÍTICA DE SEGURIDAD!</h4>
                     <p className="mt-1 text-xs">
-                      Ha seleccionado una falla mecánica ("Incorrecto") o reportó fatiga. Al enviar este formulario, el estado quedará registrado como **RECHAZADO**. El equipo debe **DETENER SU MARCHA** de inmediato para corregir las condiciones.
+                      Condición insegura detectada (falla crítica o fatiga). Estado RECHAZADO. Detenga su marcha inmediatamente.
+                    </p>
+                  </div>
+                </div>
+              )}
+              {alertLevel === 'warning' && (
+                <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-800 flex items-start gap-3">
+                  <span className="text-xl">⚠️</span>
+                  <div>
+                    <h4 className="font-bold">ADVERTENCIA MENOR</h4>
+                    <p className="mt-1 text-xs">
+                      Hay elementos menores por corregir. Conduzca con precaución y reporte al taller cuando sea posible.
+                    </p>
+                  </div>
+                </div>
+              )}
+              {alertLevel === 'good' && (
+                <div className="rounded-xl border border-emerald-300 bg-emerald-50 p-4 text-sm text-emerald-800 flex items-start gap-3">
+                  <span className="text-xl">✅</span>
+                  <div>
+                    <h4 className="font-bold">TODO EN ORDEN</h4>
+                    <p className="mt-1 text-xs">
+                      Vehículo seguro para operar. ¡Buen viaje!
                     </p>
                   </div>
                 </div>

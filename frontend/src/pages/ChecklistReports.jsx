@@ -82,7 +82,7 @@ export default function ChecklistReports() {
       const dateStr = dateObj.toLocaleDateString('es-ES')
       const timeStr = dateObj.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
       const operatorName = (sub.user && sub.user.email !== 'anonimo@empresa.local') ? (sub.user.name || sub.user.email) : (answers['Inspección realizada por'] || 'Operador Anónimo')
-      const statusLabel = sub.status === 'rejected' ? 'RECHAZADO (Advertencia)' : 'ENVIADO (Correcto)'
+      const statusLabel = sub.status === 'rejected' ? 'RECHAZADO (Crítico)' : sub.status === 'warning' ? 'PRECAUCIÓN (Menor)' : 'ENVIADO (Correcto)'
       
       return [
         sub.id,
@@ -169,7 +169,8 @@ export default function ChecklistReports() {
           >
             <option value="all">Todos los registros</option>
             <option value="submitted">🟢 Solo Correctos (Enviados)</option>
-            <option value="rejected">🔴 Solo Advertencias (Rechazados)</option>
+            <option value="warning">🟡 Solo Precauciones (Advertencias)</option>
+            <option value="rejected">🔴 Solo Críticos (Rechazados)</option>
           </select>
         </div>
       </div>
@@ -220,12 +221,14 @@ export default function ChecklistReports() {
                       </td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${
-                          isRejected 
+                          sub.status === 'rejected' 
                             ? 'bg-rose-50 text-rose-700 border border-rose-200' 
-                            : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                            : sub.status === 'warning'
+                              ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                              : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                         }`}>
-                          <span className={`h-1.5 w-1.5 rounded-full ${isRejected ? 'bg-rose-500' : 'bg-emerald-500'}`}></span>
-                          {isRejected ? 'Advertencia' : 'Correcto'}
+                          <span className={`h-1.5 w-1.5 rounded-full ${sub.status === 'rejected' ? 'bg-rose-500' : sub.status === 'warning' ? 'bg-amber-500' : 'bg-emerald-500'}`}></span>
+                          {sub.status === 'rejected' ? 'Crítico' : sub.status === 'warning' ? 'Precaución' : 'Correcto'}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right">

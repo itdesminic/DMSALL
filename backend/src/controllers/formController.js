@@ -507,7 +507,7 @@ async function getAnonymousUserId() {
 }
 
 export async function submitForm(req, res) {
-  const { formName, values } = req.body;
+  const { formName, values, alertLevel } = req.body;
   let userId = req.user?.userId;
   let userName = values['Inspección realizada por'] || req.user?.name || req.user?.email || 'Operador Anónimo';
   
@@ -519,29 +519,16 @@ export async function submitForm(req, res) {
     if (!userId) userId = await getAnonymousUserId();
     const form = await getOrCreateFormByName(formName);
     
-    // Check for critical failures or fatigue
-    let hasCriticalFailure = false;
-    let isFatigued = false;
-    
-    if (formName === 'Revisión de Pre-Uso de Vehiculo Liviano') {
-      // 1. Check fatigue
-      if (values['¿Se siente Fatigado?'] === 'Sí') {
-        isFatigued = true;
-      }
-      
-      // 2. Check checklist items marked as Incorrecto
-      Object.entries(values).forEach(([key, val]) => {
-        if (key.match(/^\d+\./) && val === 'Incorrecto (X)') {
-          hasCriticalFailure = true;
-        }
-      });
-    }
+    // Use alertLevel from frontend if provided, otherwise default to 'submitted'
+    let finalStatus = 'submitted';
+    if (alertLevel === 'critical') finalStatus = 'rejected';
+    else if (alertLevel === 'warning') finalStatus = 'warning';
 
     const submission = await prisma.formSubmission.create({
       data: {
         formId: form.id,
         userId,
-        status: (hasCriticalFailure || isFatigued) ? 'rejected' : 'submitted',
+        status: finalStatus,
         answers: JSON.stringify(values)
       }
     });
@@ -562,8 +549,11 @@ export async function submitForm(req, res) {
     let message = 'Formulario enviado correctamente.';
     let alertMessage = null;
     
-    if (hasCriticalFailure || isFatigued) {
-      alertMessage = '¡ADVERTENCIA CRÍTICA! Se detectaron fallas mecánicas incorrectas o el conductor reportó fatiga. SE DEBE DETENER EL VEHÍCULO de inmediato y no iniciar la marcha.';
+    if (finalStatus === 'rejected') {
+      alertMessage = '¡ALERTA CRÍTICA! Se detectaron fallas mecánicas vitales o fatiga. SE DEBE DETENER EL VEHÍCULO de inmediato.';
+      message = 'Formulario registrado con estado RECHAZADO.';
+    } else if (finalStatus === 'warning') {
+      alertMessage = 'ADVERTENCIA MENOR: Se detectaron fallas menores. Conduzca con precaución y reporte al taller.';
       message = 'Formulario registrado con estado de ADVERTENCIA.';
     }
 
@@ -571,7 +561,7 @@ export async function submitForm(req, res) {
       ok: true,
       message,
       alertMessage,
-      status: (hasCriticalFailure || isFatigued) ? 'rejected' : 'submitted',
+      status: finalStatus,
       submissionId: submission.id,
       pdfUrl
     });
