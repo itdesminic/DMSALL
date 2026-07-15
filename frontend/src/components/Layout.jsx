@@ -26,7 +26,7 @@ export default function Layout({ children }){
           <div className="flex items-center gap-3">
             <img src="/logo.jpg" alt="Logo Equinox Gold" className="h-9 object-contain rounded bg-white p-1" />
             <div>
-              <h1 className="text-xs font-bold tracking-tight text-white">CRM Industrial</h1>
+              <h1 className="text-xs font-bold tracking-tight text-white">Desminic LL</h1>
               <p className="text-[9px] text-slate-400 font-medium">Mina La Libertad</p>
             </div>
           </div>
