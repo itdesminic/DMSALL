@@ -622,7 +622,7 @@ export default function Forms() {
                     canvasProps={{className: "w-full h-32 cursor-crosshair touch-none"}}
                     onEnd={() => {
                       if (sigCanvas.current && !sigCanvas.current.isEmpty()) {
-                        const dataUrl = sigCanvas.current.getTrimmedCanvas().toDataURL('image/png')
+                        const dataUrl = sigCanvas.current.getCanvas().toDataURL('image/png')
                         setFormData(prev => ({...prev, Firma: dataUrl}))
                       }
                     }}

@@ -105,8 +105,8 @@ export default function CrimeaSamples() {
 
     // Basic validation
     // Signature validation
-    const realizadoSig = realizadoSigRef.current.isEmpty() ? null : realizadoSigRef.current.getTrimmedCanvas().toDataURL('image/png')
-    const revisadoSig = revisadoSigRef.current.isEmpty() ? null : revisadoSigRef.current.getTrimmedCanvas().toDataURL('image/png')
+    const realizadoSig = realizadoSigRef.current.isEmpty() ? null : realizadoSigRef.current.getCanvas().toDataURL('image/png')
+    const revisadoSig = revisadoSigRef.current.isEmpty() ? null : revisadoSigRef.current.getCanvas().toDataURL('image/png')
 
     const emptyFields = samples.some(s => !s.sampleId || !s.point || !s.timeTaken || !s.timeDelivered || !s.ph || !s.temp || !s.sampler || !s.receiver)
     if (emptyFields || !realizadoPor || !revisadoPor || !realizadoSig || !revisadoSig) {
