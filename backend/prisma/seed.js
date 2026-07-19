@@ -63,11 +63,11 @@ async function main() {
   
   // Radios
   const radios = [
-    { code: 'R-001', brand: 'Motorola', model: 'XTR', serial: 'SN001', type: 'UHF' }, 
-    { code: 'R-002', brand: 'Kenwood', model: 'KWD', serial: 'SN002', type: 'VHF' }
+    { brand: 'Motorola', model: 'XTR', serial: 'SN001', site: 'La Libertad', company: 'DESMINIC', status: 'bueno', channels: 'Canal 1' }, 
+    { brand: 'Kenwood', model: 'KWD', serial: 'SN002', site: 'Limon', company: 'DESMINIC', status: 'bueno', channels: 'Canal 2' }
   ];
   for (const r of radios) {
-    const exists = await prisma.radio.findUnique({ where: { code: r.code } });
+    const exists = await prisma.radio.findUnique({ where: { serial: r.serial } });
     if (!exists) {
       await prisma.radio.create({ data: r });
     }
