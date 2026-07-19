@@ -380,8 +380,8 @@ export default function CrimeaSamples() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             
-            {/* Scrollable table container */}
-            <div className="overflow-x-auto rounded-xl border border-slate-200 bg-slate-50/50">
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto rounded-xl border border-slate-200 bg-slate-50/50">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
                   <tr className="bg-slate-100 border-b border-slate-200 text-slate-600 font-bold uppercase text-[10px]">
@@ -516,6 +516,138 @@ export default function CrimeaSamples() {
                   ))}
                 </tbody>
               </table>
+            </div>
+
+            {/* Mobile Stacked Card View */}
+            <div className="block md:hidden space-y-4">
+              {samples.map((row, index) => (
+                <div key={index} className="rounded-xl border border-slate-200 bg-slate-50/30 p-4 space-y-3 relative">
+                  <div className="flex items-center justify-between border-b border-slate-200/60 pb-2">
+                    <span className="text-xs font-bold text-slate-500 uppercase">Muestra #{index + 1}</span>
+                    <button
+                      type="button"
+                      onClick={() => removeRow(index)}
+                      disabled={samples.length === 1}
+                      className="text-rose-500 hover:bg-rose-50 p-1 rounded transition disabled:opacity-30 text-xs font-bold"
+                    >
+                      ✕ Eliminar
+                    </button>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="col-span-2">
+                      <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Fecha</label>
+                      <input
+                        type="text"
+                        value={row.date}
+                        onChange={(e) => handleCellChange(index, 'date', e.target.value)}
+                        className="w-full rounded-lg border border-slate-200 p-2 text-xs focus:ring-blue-500 bg-white"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">ID Muestra</label>
+                      <input
+                        type="text"
+                        placeholder="ej: MW-21-01"
+                        value={row.sampleId}
+                        onChange={(e) => handleCellChange(index, 'sampleId', e.target.value)}
+                        className="w-full rounded-lg border border-slate-200 p-2 text-xs focus:ring-blue-500 bg-white font-medium"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Punto Muestreo</label>
+                      <input
+                        type="text"
+                        placeholder="ej: Crimea"
+                        value={row.point}
+                        onChange={(e) => handleCellChange(index, 'point', e.target.value)}
+                        className="w-full rounded-lg border border-slate-200 p-2 text-xs focus:ring-blue-500 bg-white font-medium"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Hora Toma</label>
+                      <input
+                        type="text"
+                        placeholder="HH:MM"
+                        value={row.timeTaken}
+                        onChange={(e) => handleCellChange(index, 'timeTaken', e.target.value)}
+                        className="w-full rounded-lg border border-slate-200 p-2 text-xs focus:ring-blue-500 bg-white font-medium"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Hora Entrega</label>
+                      <input
+                        type="text"
+                        placeholder="HH:MM"
+                        value={row.timeDelivered}
+                        onChange={(e) => handleCellChange(index, 'timeDelivered', e.target.value)}
+                        className="w-full rounded-lg border border-slate-200 p-2 text-xs focus:ring-blue-500 bg-white font-medium"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">pH</label>
+                      <input
+                        type="text"
+                        placeholder="pH"
+                        value={row.ph}
+                        onChange={(e) => handleCellChange(index, 'ph', e.target.value)}
+                        className="w-full rounded-lg border border-slate-200 p-2 text-xs focus:ring-blue-500 bg-white font-medium"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">T° (C°)</label>
+                      <input
+                        type="text"
+                        placeholder="T°"
+                        value={row.temp}
+                        onChange={(e) => handleCellChange(index, 'temp', e.target.value)}
+                        className="w-full rounded-lg border-slate-200 p-2 text-xs focus:ring-blue-500 bg-white font-medium"
+                        required
+                      />
+                    </div>
+                    <div className="col-span-2">
+                      <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Condición Climática</label>
+                      <select
+                        value={row.climate}
+                        onChange={(e) => handleCellChange(index, 'climate', e.target.value)}
+                        className="w-full rounded-lg border border-slate-200 p-2 text-xs focus:ring-blue-500 bg-white font-medium"
+                      >
+                        <option value="Lluvioso">Lluvioso</option>
+                        <option value="Soleado">Soleado</option>
+                        <option value="Nublado">Nublado</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">R. Muestreo</label>
+                      <input
+                        type="text"
+                        placeholder="Nombre"
+                        value={row.sampler}
+                        onChange={(e) => handleCellChange(index, 'sampler', e.target.value)}
+                        className="w-full rounded-lg border-slate-200 p-2 text-xs focus:ring-blue-500 bg-white font-medium"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">R. Recepción</label>
+                      <input
+                        type="text"
+                        placeholder="Nombre"
+                        value={row.receiver}
+                        onChange={(e) => handleCellChange(index, 'receiver', e.target.value)}
+                        className="w-full rounded-lg border-slate-200 p-2 text-xs focus:ring-blue-500 bg-white font-medium"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
 
             {/* Add row button */}
