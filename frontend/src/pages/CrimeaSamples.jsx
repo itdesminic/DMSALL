@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import api, { getBackendUrl } from '../services/api'
 import { Link } from 'react-router-dom'
 import SignatureCanvas from 'react-signature-canvas'
