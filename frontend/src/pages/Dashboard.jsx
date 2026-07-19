@@ -144,6 +144,7 @@ export default function Dashboard() {
               { name: 'Control de Comensales', status: 'Activo', color: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
               { name: 'Inventario de Radios', status: 'En diseño', color: 'bg-blue-100 text-blue-800 border-blue-200' },
               { name: 'Salas de Reuniones', status: 'En diseño', color: 'bg-blue-100 text-blue-800 border-blue-200' },
+              { name: 'Muestras de Crimea', status: 'Activo', color: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
               { name: 'Administración General', status: 'Activo', color: 'bg-emerald-100 text-emerald-800 border-emerald-200' }
             ].map((mod) => (
               <div key={mod.name} className="flex items-center justify-between border-b border-slate-50 pb-2.5 last:border-0 last:pb-0">

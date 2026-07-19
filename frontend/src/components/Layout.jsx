@@ -64,6 +64,9 @@ export default function Layout({ children }){
           <Link className={linkClass('/salas')} to="/salas" onClick={closeMobileMenu}>
             📅 Salas de Reunión
           </Link>
+          <Link className={linkClass('/crimea/muestras')} to="/crimea/muestras" onClick={closeMobileMenu}>
+            💧 Muestras Crimea
+          </Link>
           
           {user?.role === 'admin' && (
             <Link className={linkClass('/admin')} to="/admin" onClick={closeMobileMenu}>
