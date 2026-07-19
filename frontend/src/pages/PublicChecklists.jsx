@@ -7,6 +7,43 @@ export default function PublicChecklists() {
   const [error, setError] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
 
+  // Email state variables
+  const [emailModalId, setEmailModalId] = useState(null)
+  const [recipientEmail, setRecipientEmail] = useState('')
+  const [emailSending, setEmailSending] = useState(false)
+  const [emailMessage, setEmailMessage] = useState('')
+  const [emailError, setEmailError] = useState(false)
+
+  const handleOpenEmailModal = (submissionId) => {
+    setEmailModalId(submissionId)
+    setRecipientEmail('')
+    setEmailMessage('')
+    setEmailError(false)
+  }
+
+  const handleSendEmail = async (e) => {
+    e.preventDefault()
+    setEmailSending(true)
+    setEmailMessage('')
+    setEmailError(false)
+    try {
+      const response = await api.post('/forms/share-email', {
+        submissionId: emailModalId,
+        recipientEmail: recipientEmail
+      })
+      setEmailMessage(response.data.message || 'Correo enviado con éxito.')
+      setTimeout(() => {
+        setEmailModalId(null)
+      }, 1500)
+    } catch (err) {
+      console.error(err)
+      setEmailError(true)
+      setEmailMessage(err.response?.data?.error || 'Error al enviar el correo.')
+    } finally {
+      setEmailSending(false)
+    }
+  }
+
   const fetchPublicChecklists = async () => {
     setLoading(true)
     setError('')
@@ -140,14 +177,22 @@ export default function PublicChecklists() {
                         <td className="px-6 py-4 text-slate-900 font-semibold">{operatorName}</td>
                         <td className="px-6 py-4">{getStatusPill(sub.status)}</td>
                         <td className="px-6 py-4 text-right">
-                          <a
-                            href={`${getBackendUrl()}/api/forms/pdf/${sub.id}`}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition px-3 py-1.5 text-xs font-bold text-slate-700 shadow-sm"
-                          >
-                            📄 PDF
-                          </a>
+                          <div className="inline-flex gap-2">
+                            <a
+                              href={`${getBackendUrl()}/api/forms/pdf/${sub.id}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition px-3 py-1.5 text-xs font-bold text-slate-700 shadow-sm"
+                            >
+                              📄 PDF
+                            </a>
+                            <button
+                              onClick={() => handleOpenEmailModal(sub.id)}
+                              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition px-3 py-1.5 text-xs font-bold text-slate-700 shadow-sm"
+                            >
+                              ✉️ Correo
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     )
@@ -165,6 +210,65 @@ export default function PublicChecklists() {
           )}
         </div>
       </div>
+
+      {/* Email Modal */}
+      {emailModalId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+          <div className="relative w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-250">
+            <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4 bg-slate-50">
+              <div>
+                <h3 className="text-md font-bold text-slate-900">Enviar Checklist por Correo</h3>
+                <p className="text-xs text-slate-500 mt-0.5">El reporte PDF se adjuntará automáticamente.</p>
+              </div>
+              <button
+                onClick={() => setEmailModalId(null)}
+                className="text-slate-400 hover:text-slate-600 font-bold p-1 rounded-lg hover:bg-slate-200/50 transition"
+              >
+                ✕
+              </button>
+            </div>
+            <form onSubmit={handleSendEmail} className="p-6 space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1.5">Correo Destinatario</label>
+                <input
+                  type="email"
+                  placeholder="ejemplo@empresa.com"
+                  value={recipientEmail}
+                  onChange={(e) => setRecipientEmail(e.target.value)}
+                  className="w-full rounded-xl border border-slate-200 p-3 text-sm focus:border-blue-500 focus:ring-blue-500"
+                  required
+                />
+              </div>
+
+              {emailMessage && (
+                <div className={`p-3.5 rounded-xl border text-xs font-semibold flex items-center gap-2 ${
+                  emailError ? 'bg-rose-50 border-rose-200 text-rose-800' : 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                }`}>
+                  <span>{emailError ? '❌' : '✓'}</span>
+                  <span>{emailMessage}</span>
+                </div>
+              )}
+
+              <div className="flex justify-end gap-3 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setEmailModalId(null)}
+                  className="px-4 py-2 text-xs font-bold border border-slate-200 rounded-lg text-slate-700 hover:bg-slate-50 transition"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={emailSending}
+                  className="px-4 py-2 text-xs font-bold rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition disabled:opacity-60"
+                >
+                  {emailSending ? 'Enviando...' : 'Enviar Correo'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

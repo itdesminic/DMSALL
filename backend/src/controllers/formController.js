@@ -2,6 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import PDFDocument from 'pdfkit';
 import { PrismaClient } from '@prisma/client';
+import nodemailer from 'nodemailer';
+import { PassThrough } from 'stream';
 
 const prisma = new PrismaClient();
 const PDF_OUTPUT_DIR = path.join(process.cwd(), 'uploads', 'pdfs');
@@ -633,5 +635,74 @@ export async function listVehicles(req, res) {
   } catch (err) {
     console.error('Error al listar vehículos:', err);
     res.status(500).json({ error: 'Error al obtener vehículos' });
+  }
+}
+
+export async function sendEmailWithPdf(req, res) {
+  const { submissionId, recipientEmail } = req.body;
+
+  if (!submissionId || !recipientEmail) {
+    return res.status(400).json({ error: 'submissionId y recipientEmail son requeridos' });
+  }
+
+  try {
+    const submission = await prisma.formSubmission.findUnique({
+      where: { id: parseInt(submissionId) },
+      include: { form: true, user: true }
+    });
+
+    if (!submission) {
+      return res.status(404).json({ error: 'Reporte no encontrado' });
+    }
+
+    const values = JSON.parse(submission.answers);
+    const driverName = (submission.user && submission.user.email !== 'anonimo@empresa.local') 
+      ? (submission.user.name || submission.user.email) 
+      : (values['Inspección realizada por'] || 'Operador Anónimo');
+
+    // Generate PDF to buffer in memory
+    const pdfBuffer = await new Promise((resolve, reject) => {
+      const pdfStream = new PassThrough();
+      const chunks = [];
+      pdfStream.on('data', (chunk) => chunks.push(chunk));
+      pdfStream.on('end', () => resolve(Buffer.concat(chunks)));
+      pdfStream.on('error', reject);
+      generatePdfToStream(submission.id, submission.form.name, values, driverName, pdfStream);
+    });
+
+    // Configure Nodemailer transporter
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: parseInt(process.env.SMTP_PORT) || 587,
+      secure: false, 
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+      tls: {
+        rejectUnauthorized: false
+      }
+    });
+
+    const mailOptions = {
+      from: `"Desminic LL - Reportes" <${process.env.SMTP_USER}>`,
+      to: recipientEmail,
+      subject: `Checklist de Camioneta #${submission.id} - ${submission.form.name}`,
+      text: `Adjunto encontrarás el reporte del checklist de pre-uso con código/placa ${values['Placa del Vehículo'] || ''} realizado por ${driverName}.`,
+      attachments: [
+        {
+          filename: `reporte-${submission.id}.pdf`,
+          content: pdfBuffer,
+          contentType: 'application/pdf'
+        }
+      ]
+    };
+
+    await transporter.sendMail(mailOptions);
+    res.json({ ok: true, message: `Correo enviado exitosamente a ${recipientEmail}` });
+
+  } catch (err) {
+    console.error('Error en sendEmailWithPdf:', err);
+    res.status(500).json({ error: err.message || 'Error interno al enviar el correo electrónico' });
   }
 }

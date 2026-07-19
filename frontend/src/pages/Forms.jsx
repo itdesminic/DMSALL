@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import api, { getBackendUrl } from '../services/api'
 import { useAuth } from '../context/AuthContext'
+import { Link } from 'react-router-dom'
 import SignatureCanvas from 'react-signature-canvas'
 
 export default function Forms() {
@@ -219,12 +220,22 @@ export default function Forms() {
         // Active Form View
         <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <button
-              onClick={() => setSelectedTemplate(null)}
-              className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 transition"
-            >
-              ← Volver al listado
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setSelectedTemplate(null)}
+                className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 transition"
+              >
+                ← Volver al listado
+              </button>
+              {selectedTemplate === 'Revisión de Pre-Uso de Vehiculo Liviano' && (
+                <Link
+                  to="/formularios/checkcamionetas"
+                  className="inline-flex items-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700 shadow-sm hover:bg-blue-100 transition"
+                >
+                  🔍 Consultar Historial
+                </Link>
+              )}
+            </div>
             <div className="text-xs text-slate-400 font-mono">
               {selectedTemplate === 'Revisión de Pre-Uso de Vehiculo Liviano' ? 'Código: FOR-13-015 | Rev. 2.0' : ''}
             </div>
