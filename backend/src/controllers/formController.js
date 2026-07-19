@@ -93,6 +93,16 @@ const FORM_TEMPLATES = [
       { label: 'Área', type: 'text' },
       { label: 'Acciones tomadas', type: 'text' }
     ]
+  },
+  {
+    name: 'Formato de Control de Toma y Entrega de Muestras de Agua',
+    areaName: 'Crimea',
+    fields: [
+      { label: 'Muestras', type: 'text' },
+      { label: 'Realizado por', type: 'text' },
+      { label: 'Revisado por', type: 'text' },
+      { label: 'Fotos', type: 'text' }
+    ]
   }
 ];
 
@@ -420,6 +430,155 @@ export function generatePdfToStream(submissionId, formName, values, userName, ou
         console.error('Error insertando firma en reporte estándar:', e);
       }
     }
+  } else if (formName === 'Formato de Control de Toma y Entrega de Muestras de Agua') {
+    // ----------------------------------------------------
+    // CRIMEA WATER SAMPLES DESIGN (FOR-21-009)
+    // ----------------------------------------------------
+    doc.rect(30, 30, 535, 782).stroke();
+    
+    // Header Grid (Outer Box y=30 to y=85, height=55)
+    doc.lineJoin('miter');
+    doc.rect(30, 30, 535, 55).stroke();
+    
+    // Vertical split 1: Logo section (width 130)
+    doc.moveTo(160, 30).lineTo(160, 85).stroke();
+    // Vertical split 2: Title section (width 265)
+    doc.moveTo(425, 30).lineTo(425, 85).stroke();
+    
+    // Logo Image
+    const logoPath = path.join(process.cwd(), 'src', 'logo.jpg');
+    if (fs.existsSync(logoPath)) {
+      doc.image(logoPath, 35, 42, { width: 120 });
+    } else {
+      doc.fontSize(11).font('Helvetica-Bold').text('EQUINOX GOLD', 40, 50);
+    }
+    
+    // Title text
+    doc.fontSize(9).font('Helvetica-Bold').text('FORMATO DE CONTROL DE TOMA Y ENTREGA DE MUESTRAS DE AGUA', 170, 45, { width: 240, align: 'center' });
+    
+    // Metadata block (Right Cell)
+    doc.fontSize(7).font('Helvetica');
+    doc.text('Código:', 430, 35);
+    doc.font('Helvetica-Bold').text('FOR-21-009', 485, 35);
+    
+    doc.font('Helvetica').text('Revisión:', 430, 47);
+    doc.font('Helvetica-Bold').text('0', 485, 47);
+    
+    doc.font('Helvetica').text('Fecha Emisión:', 430, 59);
+    doc.font('Helvetica-Bold').text('21/1/2026', 485, 59);
+    
+    doc.font('Helvetica').text('No. Páginas:', 430, 71);
+    doc.font('Helvetica-Bold').text('1/1', 485, 71);
+
+    // Table Header (y=100)
+    const tableTop = 100;
+    doc.rect(30, tableTop, 535, 30).fillAndStroke('#e2e8f0', '#000000');
+    doc.fillColor('#000000').fontSize(6).font('Helvetica-Bold');
+    
+    // Columns X coordinates and widths
+    const cols = [
+      { name: 'FECHA', x: 32, w: 45 },
+      { name: 'ID MUESTRA', x: 80, w: 60 },
+      { name: 'PUNTO MUESTREO', x: 145, w: 85 },
+      { name: 'H. TOMA', x: 235, w: 35 },
+      { name: 'H. ENTREGA', x: 275, w: 45 },
+      { name: 'pH', x: 325, w: 20 },
+      { name: 'T°(C°)', x: 350, w: 25 },
+      { name: 'CONDICION', x: 380, w: 45 },
+      { name: 'RESP. MUESTREO', x: 430, w: 65 },
+      { name: 'RESP. RECEPCION', x: 500, w: 60 }
+    ];
+
+    // Draw Column Headers
+    cols.forEach(c => {
+      doc.text(c.name, c.x, tableTop + 10, { width: c.w, align: 'center' });
+    });
+
+    // Draw Vertical split lines in headers
+    doc.moveTo(77, tableTop).lineTo(77, tableTop + 30).stroke();
+    doc.moveTo(142, tableTop).lineTo(142, tableTop + 30).stroke();
+    doc.moveTo(232, tableTop).lineTo(232, tableTop + 30).stroke();
+    doc.moveTo(272, tableTop).lineTo(272, tableTop + 30).stroke();
+    doc.moveTo(322, tableTop).lineTo(322, tableTop + 30).stroke();
+    doc.moveTo(377, tableTop).lineTo(377, tableTop + 30).stroke();
+    doc.moveTo(427, tableTop).lineTo(427, tableTop + 30).stroke();
+    doc.moveTo(497, tableTop).lineTo(497, tableTop + 30).stroke();
+    // Inner split for pH and T
+    doc.moveTo(347, tableTop + 15).lineTo(347, tableTop + 30).stroke();
+    doc.moveTo(322, tableTop + 15).lineTo(377, tableTop + 15).stroke();
+
+    // Render Rows
+    let samples = [];
+    try {
+      samples = JSON.parse(values['Muestras'] || '[]');
+    } catch(e) {
+      console.error(e);
+    }
+
+    let y = tableTop + 30;
+    doc.font('Helvetica').fontSize(6);
+    
+    samples.forEach((row, i) => {
+      // Draw Row Box
+      doc.rect(30, y, 535, 20).stroke();
+      
+      // Draw values
+      doc.text(row.date || '-', 32, y + 6, { width: 45, align: 'center' });
+      doc.text(row.sampleId || '-', 80, y + 6, { width: 60, align: 'center' });
+      doc.text(row.point || '-', 145, y + 6, { width: 85, align: 'center' });
+      doc.text(row.timeTaken || '-', 235, y + 6, { width: 35, align: 'center' });
+      doc.text(row.timeDelivered || '-', 275, y + 6, { width: 45, align: 'center' });
+      doc.text(row.ph || '-', 325, y + 6, { width: 20, align: 'center' });
+      doc.text(row.temp || '-', 350, y + 6, { width: 25, align: 'center' });
+      doc.text(row.climate || '-', 380, y + 6, { width: 45, align: 'center' });
+      doc.text(row.sampler || '-', 430, y + 6, { width: 65, align: 'center' });
+      doc.text(row.receiver || '-', 500, y + 6, { width: 60, align: 'center' });
+
+      // Draw vertical lines in row
+      doc.moveTo(77, y).lineTo(77, y + 20).stroke();
+      doc.moveTo(142, y).lineTo(142, y + 20).stroke();
+      doc.moveTo(232, y).lineTo(232, y + 20).stroke();
+      doc.moveTo(272, y).lineTo(272, y + 20).stroke();
+      doc.moveTo(322, y).lineTo(322, y + 20).stroke();
+      doc.moveTo(347, y).lineTo(347, y + 20).stroke();
+      doc.moveTo(377, y).lineTo(377, y + 20).stroke();
+      doc.moveTo(427, y).lineTo(427, y + 20).stroke();
+      doc.moveTo(497, y).lineTo(497, y + 20).stroke();
+      
+      y += 20;
+    });
+
+    // Signature / responsible area at the bottom
+    const sigY = 750;
+    doc.moveTo(30, sigY).lineTo(565, sigY).stroke();
+    doc.fontSize(8).font('Helvetica-Bold');
+    doc.text('Realizado por: ' + (values['Realizado por'] || '-'), 35, sigY + 15, { width: 250 });
+    doc.text('Revisado por: ' + (values['Revisado por'] || '-'), 305, sigY + 15, { width: 250 });
+
+    // Photos Section
+    let photos = [];
+    try {
+      photos = JSON.parse(values['Fotos'] || '[]');
+    } catch(e) {}
+
+    if (photos.length > 0) {
+      doc.addPage();
+      doc.rect(30, 30, 535, 782).stroke();
+      doc.fontSize(14).font('Helvetica-Bold').text('Fotografías Adjuntas de Muestreo', 40, 50);
+      
+      let photoY = 80;
+      photos.forEach((photo, idx) => {
+        try {
+          const base64Data = photo.replace(/^data:image\/[a-z]+;base64,/, "");
+          const photoBuffer = Buffer.from(base64Data, 'base64');
+          doc.image(photoBuffer, 40, photoY, { width: 240, height: 180 });
+          doc.fontSize(10).font('Helvetica-Bold').text(`Fotografía #${idx + 1}`, 40, photoY + 190);
+          photoY += 230;
+        } catch(e) {
+          console.error('Error insertando foto en reporte Crimea:', e);
+        }
+      });
+    }
   }
   
   doc.end();
@@ -541,6 +700,11 @@ export async function submitForm(req, res) {
     } else if (finalStatus === 'warning') {
       alertMessage = 'ADVERTENCIA MENOR: Se detectaron fallas menores. Conduzca con precaución y reporte al taller.';
       message = 'Formulario registrado con estado de ADVERTENCIA.';
+    }
+
+    if (formName === 'Formato de Control de Toma y Entrega de Muestras de Agua') {
+      const sendToMelissa = req.body.sendToMelissa !== false;
+      sendCrimeaEmailAsync(submission.id, sendToMelissa).catch(e => console.error('Error al enviar correo automático de Crimea:', e));
     }
 
     res.json({
@@ -704,5 +868,68 @@ export async function sendEmailWithPdf(req, res) {
   } catch (err) {
     console.error('Error en sendEmailWithPdf:', err);
     res.status(500).json({ error: err.message || 'Error interno al enviar el correo electrónico' });
+  }
+}
+
+async function sendCrimeaEmailAsync(submissionId, sendToMelissa) {
+  try {
+    const submission = await prisma.formSubmission.findUnique({
+      where: { id: submissionId },
+      include: { form: true, user: true }
+    });
+    if (!submission) return;
+
+    const values = JSON.parse(submission.answers);
+    const driverName = values['Realizado por'] || 'Operador Anónimo';
+
+    // Parse recipient emails
+    let recipients = (process.env.CRIMEA_EMAIL_RECIPIENTS || 'pavel.useda@equinoxgold.com,byron.colleman@equinoxgold.com').split(',');
+    recipients = recipients.map(email => email.trim());
+
+    if (!sendToMelissa) {
+      recipients = recipients.filter(email => !email.includes('melissa.lazo'));
+    }
+
+    // Generate PDF to buffer
+    const pdfBuffer = await new Promise((resolve, reject) => {
+      const pdfStream = new PassThrough();
+      const chunks = [];
+      pdfStream.on('data', (chunk) => chunks.push(chunk));
+      pdfStream.on('end', () => resolve(Buffer.concat(chunks)));
+      pdfStream.on('error', reject);
+      generatePdfToStream(submission.id, submission.form.name, values, driverName, pdfStream);
+    });
+
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: parseInt(process.env.SMTP_PORT) || 587,
+      secure: false, 
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+      tls: {
+        rejectUnauthorized: false
+      }
+    });
+
+    const mailOptions = {
+      from: `"Desminic LL - Crimea Muestras" <${process.env.SMTP_USER}>`,
+      to: recipients.join(', '),
+      subject: `Formulario Crimea Muestras #${submission.id} - ${new Date().toLocaleDateString('es-ES')}`,
+      text: `Se ha registrado una nueva toma y entrega de muestras de agua (FOR-21-009) realizada por ${driverName}.\n\nAdjunto encontrarás el reporte del formulario correspondiente en formato PDF.`,
+      attachments: [
+        {
+          filename: `crimea-muestras-${submission.id}.pdf`,
+          content: pdfBuffer,
+          contentType: 'application/pdf'
+        }
+      ]
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log('Correo automático de Crimea enviado a:', recipients.join(', '));
+  } catch (err) {
+    console.error('Error al enviar correo automático de Crimea:', err);
   }
 }
