@@ -600,6 +600,30 @@ export async function downloadPdf(req, res) {
   }
 }
 
+export async function listPublicChecklists(req, res) {
+  try {
+    const submissions = await prisma.formSubmission.findMany({
+      where: {
+        form: {
+          name: 'Revisión de Pre-Uso de Vehiculo Liviano'
+        }
+      },
+      include: {
+        form: {
+          include: { area: true }
+        },
+        user: true
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 100
+    });
+    res.json(submissions);
+  } catch (err) {
+    console.error('Error al listar reportes públicos:', err);
+    res.status(500).json({ error: 'Error al obtener reportes públicos' });
+  }
+}
+
 export async function listVehicles(req, res) {
   try {
     const vehicles = await prisma.vehicle.findMany({
