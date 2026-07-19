@@ -810,6 +810,28 @@ export async function listPublicChecklists(req, res) {
   }
 }
 
+export async function listPublicCrimeaSubmissions(req, res) {
+  try {
+    const submissions = await prisma.formSubmission.findMany({
+      where: {
+        form: { name: 'Formato de Control de Toma y Entrega de Muestras de Agua' }
+      },
+      include: {
+        form: {
+          include: { area: true }
+        },
+        user: true
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 100
+    });
+    res.json(submissions);
+  } catch (err) {
+    console.error('Error al listar reportes de Crimea:', err);
+    res.status(500).json({ error: 'Error al obtener reportes de Crimea' });
+  }
+}
+
 export async function listVehicles(req, res) {
   try {
     const vehicles = await prisma.vehicle.findMany({
