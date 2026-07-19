@@ -397,39 +397,6 @@ export function generatePdfToStream(submissionId, formName, values, userName, ou
     doc.fontSize(8).font('Helvetica-Bold').text('Firma de Supervisor de Área', 330, sigY + 72, { width: 200, align: 'center' });
     doc.fontSize(7.5).font('Helvetica').text(values['Supervisor de área'] || '-', 330, sigY + 82, { width: 200, align: 'center' });
     
-  } else {
-    // ----------------------------------------------------
-    // STANDARD REPORT DESIGN
-    // ----------------------------------------------------
-    doc.fontSize(20).font('Helvetica-Bold').text(formName, { align: 'center' });
-    doc.moveDown();
-    doc.fontSize(11).font('Helvetica').text(`Fecha: ${new Date().toLocaleString('es-ES')}`);
-    doc.text(`Realizado por: ${userName}`);
-    doc.moveDown();
-    doc.fontSize(13).font('Helvetica-Bold').text('Datos registrados:');
-    doc.moveDown(0.5);
-    
-    Object.entries(values).forEach(([key, value]) => {
-      if (key === 'Firma') return; // Hide base64 text
-      
-      const displayValue = typeof value === 'boolean' ? (value ? 'Sí' : 'No') : (value || '-');
-      doc.fontSize(11).font('Helvetica-Bold').text(`${key}: `, { goToId: true }).font('Helvetica').text(displayValue);
-      doc.moveDown(0.3);
-    });
-    
-    // Print signature at the bottom for standard reports if it exists
-    if (values['Firma'] && values['Firma'].startsWith('data:image/png;base64,')) {
-      doc.moveDown(2);
-      doc.fontSize(11).font('Helvetica-Bold').text('Firma del Operador:');
-      doc.moveDown(1);
-      try {
-        const base64Data = values['Firma'].replace(/^data:image\/png;base64,/, "");
-        const signatureBuffer = Buffer.from(base64Data, 'base64');
-        doc.image(signatureBuffer, doc.x, doc.y, { width: 160, height: 55 });
-      } catch (e) {
-        console.error('Error insertando firma en reporte estándar:', e);
-      }
-    }
   } else if (formName === 'Formato de Control de Toma y Entrega de Muestras de Agua') {
     // ----------------------------------------------------
     // CRIMEA WATER SAMPLES DESIGN (FOR-21-009)
@@ -578,6 +545,39 @@ export function generatePdfToStream(submissionId, formName, values, userName, ou
           console.error('Error insertando foto en reporte Crimea:', e);
         }
       });
+    }
+  } else {
+    // ----------------------------------------------------
+    // STANDARD REPORT DESIGN
+    // ----------------------------------------------------
+    doc.fontSize(20).font('Helvetica-Bold').text(formName, { align: 'center' });
+    doc.moveDown();
+    doc.fontSize(11).font('Helvetica').text(`Fecha: ${new Date().toLocaleString('es-ES')}`);
+    doc.text(`Realizado por: ${userName}`);
+    doc.moveDown();
+    doc.fontSize(13).font('Helvetica-Bold').text('Datos registrados:');
+    doc.moveDown(0.5);
+    
+    Object.entries(values).forEach(([key, value]) => {
+      if (key === 'Firma') return; // Hide base64 text
+      
+      const displayValue = typeof value === 'boolean' ? (value ? 'Sí' : 'No') : (value || '-');
+      doc.fontSize(11).font('Helvetica-Bold').text(`${key}: `, { goToId: true }).font('Helvetica').text(displayValue);
+      doc.moveDown(0.3);
+    });
+    
+    // Print signature at the bottom for standard reports if it exists
+    if (values['Firma'] && values['Firma'].startsWith('data:image/png;base64,')) {
+      doc.moveDown(2);
+      doc.fontSize(11).font('Helvetica-Bold').text('Firma del Operador:');
+      doc.moveDown(1);
+      try {
+        const base64Data = values['Firma'].replace(/^data:image\/png;base64,/, "");
+        const signatureBuffer = Buffer.from(base64Data, 'base64');
+        doc.image(signatureBuffer, doc.x, doc.y, { width: 160, height: 55 });
+      } catch (e) {
+        console.error('Error insertando firma en reporte estándar:', e);
+      }
     }
   }
   
