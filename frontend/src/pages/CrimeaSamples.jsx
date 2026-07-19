@@ -1,8 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import api, { getBackendUrl } from '../services/api'
 import { Link } from 'react-router-dom'
+import SignatureCanvas from 'react-signature-canvas'
 
 export default function CrimeaSamples() {
+  const realizadoSigRef = useRef(null)
+  const revisadoSigRef = useRef(null)
   const [samples, setSamples] = useState([
     {
       date: new Date().toLocaleDateString('es-ES'),
@@ -101,10 +104,14 @@ export default function CrimeaSamples() {
     setPdfUrl('')
 
     // Basic validation
+    // Signature validation
+    const realizadoSig = realizadoSigRef.current.isEmpty() ? null : realizadoSigRef.current.getTrimmedCanvas().toDataURL('image/png')
+    const revisadoSig = revisadoSigRef.current.isEmpty() ? null : revisadoSigRef.current.getTrimmedCanvas().toDataURL('image/png')
+
     const emptyFields = samples.some(s => !s.sampleId || !s.point || !s.timeTaken || !s.timeDelivered || !s.ph || !s.temp || !s.sampler || !s.receiver)
-    if (emptyFields || !realizadoPor || !revisadoPor) {
+    if (emptyFields || !realizadoPor || !revisadoPor || !realizadoSig || !revisadoSig) {
       setIsError(true)
-      setMessage('Por favor completa todos los campos requeridos de la tabla y firmas.')
+      setMessage('Por favor completa todos los campos requeridos de la tabla, nombres y firmas de Realizado y Revisado.')
       setLoading(false)
       return
     }
@@ -116,6 +123,8 @@ export default function CrimeaSamples() {
           Muestras: JSON.stringify(samples),
           'Realizado por': realizadoPor,
           'Revisado por': revisadoPor,
+          'Firma Realizado': realizadoSig,
+          'Firma Revisado': revisadoSig,
           Fotos: JSON.stringify(photos)
         },
         sendToMelissa
@@ -143,6 +152,8 @@ export default function CrimeaSamples() {
       ])
       setRealizadoPor('')
       setRevisadoPor('')
+      realizadoSigRef.current.clear()
+      revisadoSigRef.current.clear()
       setPhotos([])
     } catch (err) {
       console.error(err)
@@ -367,27 +378,66 @@ export default function CrimeaSamples() {
 
           {/* Signature names (Realizado por and Revisado por) */}
           <div className="grid gap-6 sm:grid-cols-2 bg-slate-50/50 p-5 rounded-2xl border border-slate-200">
-            <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5">Realizado por</label>
-              <input
-                type="text"
-                placeholder="Nombre de quien realiza el muestreo"
-                value={realizadoPor}
-                onChange={(e) => setRealizadoPor(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 p-3 text-sm focus:border-blue-500 focus:ring-blue-500 bg-white"
-                required
-              />
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5">Realizado por (Nombre)</label>
+                <input
+                  type="text"
+                  placeholder="Nombre de quien realiza el muestreo"
+                  value={realizadoPor}
+                  onChange={(e) => setRealizadoPor(e.target.value)}
+                  className="w-full rounded-xl border border-slate-200 p-3 text-sm focus:border-blue-500 focus:ring-blue-500 bg-white font-medium"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5">Firma de Realizado</label>
+                <div className="border border-slate-200 rounded-xl bg-white overflow-hidden">
+                  <SignatureCanvas
+                    ref={realizadoSigRef}
+                    penColor="black"
+                    canvasProps={{ className: 'w-full h-32 bg-white cursor-crosshair' }}
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => realizadoSigRef.current.clear()}
+                  className="mt-1.5 text-[10px] font-bold text-slate-500 hover:text-rose-500 transition"
+                >
+                  Clear/Limpiar Firma
+                </button>
+              </div>
             </div>
-            <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5">Revisado por</label>
-              <input
-                type="text"
-                placeholder="Nombre del supervisor revisor"
-                value={revisadoPor}
-                onChange={(e) => setRevisadoPor(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 p-3 text-sm focus:border-blue-500 focus:ring-blue-500 bg-white"
-                required
-              />
+            
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5">Revisado por (Nombre)</label>
+                <input
+                  type="text"
+                  placeholder="Nombre del supervisor revisor"
+                  value={revisadoPor}
+                  onChange={(e) => setRevisadoPor(e.target.value)}
+                  className="w-full rounded-xl border border-slate-200 p-3 text-sm focus:border-blue-500 focus:ring-blue-500 bg-white font-medium"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5">Firma de Revisado</label>
+                <div className="border border-slate-200 rounded-xl bg-white overflow-hidden">
+                  <SignatureCanvas
+                    ref={revisadoSigRef}
+                    penColor="black"
+                    canvasProps={{ className: 'w-full h-32 bg-white cursor-crosshair' }}
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => revisadoSigRef.current.clear()}
+                  className="mt-1.5 text-[10px] font-bold text-slate-500 hover:text-rose-500 transition"
+                >
+                  Clear/Limpiar Firma
+                </button>
+              </div>
             </div>
           </div>
 

@@ -516,11 +516,31 @@ export function generatePdfToStream(submissionId, formName, values, userName, ou
     });
 
     // Signature / responsible area at the bottom
-    const sigY = 750;
+    const sigY = 720;
     doc.moveTo(30, sigY).lineTo(565, sigY).stroke();
     doc.fontSize(8).font('Helvetica-Bold');
-    doc.text('Realizado por: ' + (values['Realizado por'] || '-'), 35, sigY + 15, { width: 250 });
-    doc.text('Revisado por: ' + (values['Revisado por'] || '-'), 305, sigY + 15, { width: 250 });
+    doc.text('Realizado por: ' + (values['Realizado por'] || '-'), 35, sigY + 5, { width: 250 });
+    doc.text('Revisado por: ' + (values['Revisado por'] || '-'), 305, sigY + 5, { width: 250 });
+
+    if (values['Firma Realizado'] && values['Firma Realizado'].startsWith('data:image/png;base64,')) {
+      try {
+        const base64Data = values['Firma Realizado'].replace(/^data:image\/png;base64,/, "");
+        const signatureBuffer = Buffer.from(base64Data, 'base64');
+        doc.image(signatureBuffer, 35, sigY + 15, { width: 120, height: 40 });
+      } catch (e) {
+        console.error('Error insertando firma realizado:', e);
+      }
+    }
+
+    if (values['Firma Revisado'] && values['Firma Revisado'].startsWith('data:image/png;base64,')) {
+      try {
+        const base64Data = values['Firma Revisado'].replace(/^data:image\/png;base64,/, "");
+        const signatureBuffer = Buffer.from(base64Data, 'base64');
+        doc.image(signatureBuffer, 305, sigY + 15, { width: 120, height: 40 });
+      } catch (e) {
+        console.error('Error insertando firma revisado:', e);
+      }
+    }
 
     // Photos Section
     let photos = [];
