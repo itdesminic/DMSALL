@@ -22,7 +22,7 @@ export default function CrimeaSamples() {
   ])
 
   const [realizadoPor, setRealizadoPor] = useState('')
-  const [revisadoPor, setRevisadoPor] = useState('')
+  const [revisadoPor, setRevisadoPor] = useState('Pavel Useda')
   const [sendToMelissa, setSendToMelissa] = useState(true)
   const [photos, setPhotos] = useState([])
   const [loading, setLoading] = useState(false)
@@ -109,9 +109,9 @@ export default function CrimeaSamples() {
     const revisadoSig = revisadoSigRef.current.isEmpty() ? null : revisadoSigRef.current.getCanvas().toDataURL('image/png')
 
     const emptyFields = samples.some(s => !s.sampleId || !s.point || !s.timeTaken || !s.timeDelivered || !s.ph || !s.temp || !s.sampler || !s.receiver)
-    if (emptyFields || !realizadoPor || !revisadoPor || !realizadoSig || !revisadoSig) {
+    if (emptyFields || !realizadoPor || !revisadoPor) {
       setIsError(true)
-      setMessage('Por favor completa todos los campos requeridos de la tabla, nombres y firmas de Realizado y Revisado.')
+      setMessage('Por favor completa todos los campos requeridos de la tabla y los nombres de Realizado y Revisado.')
       setLoading(false)
       return
     }
@@ -151,9 +151,9 @@ export default function CrimeaSamples() {
         }
       ])
       setRealizadoPor('')
-      setRevisadoPor('')
-      realizadoSigRef.current.clear()
-      revisadoSigRef.current.clear()
+      setRevisadoPor('Pavel Useda')
+      if (realizadoSigRef.current) realizadoSigRef.current.clear()
+      if (revisadoSigRef.current) revisadoSigRef.current.clear()
       setPhotos([])
     } catch (err) {
       console.error(err)
