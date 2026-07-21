@@ -207,6 +207,8 @@ model LodgingRequest {
   guestName  String
   guestEmail String?
   days       Int
+  startDate  DateTime?
+  endDate    DateTime?
   account    String           // Ejemplo: 5612-01-000-3-402-888-8888
   status     String           @default("pending") // "pending", "approved", "rejected"
   locationId Int?

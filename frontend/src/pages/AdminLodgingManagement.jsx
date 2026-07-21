@@ -99,6 +99,22 @@ export default function AdminLodgingManagement() {
     }
   }
 
+  // 2.5 Cancel request
+  const handleCancel = async (requestId) => {
+    if (!window.confirm('¿Está seguro de que desea cancelar esta solicitud de hospedaje? La habitación asignada volverá a estar disponible.')) return
+    try {
+      await api.patch(`/lodging/requests/${requestId}`, {
+        status: 'cancelled'
+      })
+      setActionSuccess('Solicitud cancelada con éxito.')
+      fetchRequests()
+      fetchLocations()
+    } catch (err) {
+      console.error(err)
+      alert('Error al cancelar la solicitud.')
+    }
+  }
+
   // 3. Create location
   const handleCreateLocation = async (e) => {
     e.preventDefault()
@@ -253,10 +269,14 @@ export default function AdminLodgingManagement() {
                           <div className="font-semibold text-slate-900">{req.guestName}</div>
                           <div className="text-xs text-slate-400 font-normal mt-0.5">{req.guestEmail || 'Sin correo'}</div>
                         </td>
-                        <td className="px-6 py-4 text-slate-800">
-                          <div>{req.days} {req.days === 1 ? 'día' : 'días'}</div>
-                          <div className="text-[10px] text-slate-400 font-normal mt-0.5">
-                            Recibido: {new Date(req.createdAt).toLocaleDateString('es-ES')}
+                        <td className="px-6 py-4 text-slate-800 text-xs">
+                          <div className="font-semibold">
+                            {req.startDate ? new Date(req.startDate).toLocaleDateString('es-ES') : ''} al{' '}
+                            {req.endDate ? new Date(req.endDate).toLocaleDateString('es-ES') : ''}
+                          </div>
+                          <div className="text-slate-500 mt-0.5">({req.days} {req.days === 1 ? 'día' : 'días'})</div>
+                          <div className="text-[10px] text-slate-400 font-normal">
+                            Creado: {new Date(req.createdAt).toLocaleDateString('es-ES')}
                           </div>
                         </td>
                         <td className="px-6 py-4 font-mono text-xs text-slate-600">{req.account}</td>
@@ -276,9 +296,11 @@ export default function AdminLodgingManagement() {
                               ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                               : req.status === 'rejected'
                               ? 'bg-rose-50 text-rose-700 border-rose-200'
+                              : req.status === 'cancelled'
+                              ? 'bg-slate-100 text-slate-650 border-slate-200'
                               : 'bg-amber-50 text-amber-700 border-amber-200'
                           }`}>
-                            {req.status === 'approved' ? 'Aprobado' : req.status === 'rejected' ? 'Rechazado' : 'Pendiente'}
+                            {req.status === 'approved' ? 'Aprobado' : req.status === 'rejected' ? 'Rechazado' : req.status === 'cancelled' ? 'Cancelado' : 'Pendiente'}
                           </span>
                         </td>
                         <td className="px-6 py-4 text-right">
@@ -301,6 +323,14 @@ export default function AdminLodgingManagement() {
                                 ✕ Rechazar
                               </button>
                             </div>
+                          )}
+                          {req.status === 'approved' && (
+                            <button
+                              onClick={() => handleCancel(req.id)}
+                              className="border border-rose-250 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs px-3 py-1.5 rounded-lg transition"
+                            >
+                              ✕ Cancelar
+                            </button>
                           )}
                         </td>
                       </tr>
