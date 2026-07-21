@@ -69,9 +69,14 @@ export default function Layout({ children }){
           </Link>
           
           {user?.role === 'admin' && (
-            <Link className={linkClass('/admin')} to="/admin" onClick={closeMobileMenu}>
-              ⚙️ Administración
-            </Link>
+            <>
+              <Link className={linkClass('/admin/hospedaje')} to="/admin/hospedaje" onClick={closeMobileMenu}>
+                🏨 Hospedaje y Comida
+              </Link>
+              <Link className={linkClass('/admin')} to="/admin" onClick={closeMobileMenu}>
+                ⚙️ Administración
+              </Link>
+            </>
           )}
         </nav>
       </div>

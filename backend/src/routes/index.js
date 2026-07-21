@@ -10,6 +10,7 @@ import notificationRoutes from './notificationRoutes.js';
 import settingsRoutes from './settingsRoutes.js';
 import dashboardRoutes from './dashboardRoutes.js';
 import vehicleRoutes from './vehicleRoutes.js';
+import lodgingRoutes from './lodgingRoutes.js';
 
 const router = express.Router();
 
@@ -24,5 +25,6 @@ router.use('/notifications', notificationRoutes);
 router.use('/settings', settingsRoutes);
 router.use('/dashboard', dashboardRoutes);
 router.use('/vehicles', vehicleRoutes);
+router.use('/lodging', lodgingRoutes);
 
 export default router;

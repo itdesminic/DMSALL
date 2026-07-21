@@ -11,6 +11,8 @@ import Admin from './pages/Admin'
 import ChecklistReports from './pages/ChecklistReports'
 import PublicChecklists from './pages/PublicChecklists'
 import CrimeaSamples from './pages/CrimeaSamples'
+import PublicLodgingRequest from './pages/PublicLodgingRequest'
+import AdminLodgingManagement from './pages/AdminLodgingManagement'
 import Layout from './components/Layout'
 import ProtectedRoute from './components/ProtectedRoute'
 import { useAuth } from './context/AuthContext'
@@ -203,6 +205,8 @@ export default function App(){
       <Route path="/radios/listado" element={<ProtectedRoute><Layout><Radios/></Layout></ProtectedRoute>} />
       <Route path="/radios" element={<Navigate replace to="/radios/listado" />} />
       <Route path="/salas" element={<ProtectedRoute><Layout><Rooms/></Layout></ProtectedRoute>} />
+      <Route path="/servicios/hospedaje/solicitud" element={<PublicLodgingRequest />} />
+      <Route path="/admin/hospedaje" element={<ProtectedRoute allowedRoles={['admin']}><Layout><AdminLodgingManagement/></Layout></ProtectedRoute>} />
       <Route path="/admin" element={<ProtectedRoute allowedRoles={['admin']}><Layout><Admin/></Layout></ProtectedRoute>} />
       <Route path="*" element={<Navigate replace to="/" />} />
     </Routes>

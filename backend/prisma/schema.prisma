@@ -181,3 +181,38 @@ model AuditLog {
   action  String
   at      DateTime @default(now())
 }
+
+model LodgingLocation {
+  id        Int              @id @default(autoincrement())
+  name      String           @unique
+  address   String?
+  rooms     LodgingRoom[]
+  requests  LodgingRequest[]
+  createdAt DateTime         @default(now())
+}
+
+model LodgingRoom {
+  id         Int              @id @default(autoincrement())
+  number     String
+  locationId Int
+  location   LodgingLocation  @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  beds       Int              @default(1)
+  status     String           @default("available") // "available", "maintenance", "occupied"
+  requests   LodgingRequest[]
+  createdAt  DateTime         @default(now())
+}
+
+model LodgingRequest {
+  id         Int              @id @default(autoincrement())
+  guestName  String
+  guestEmail String?
+  days       Int
+  account    String           // Ejemplo: 5612-01-000-3-402-888-8888
+  status     String           @default("pending") // "pending", "approved", "rejected"
+  locationId Int?
+  location   LodgingLocation? @relation(fields: [locationId], references: [id])
+  roomId     Int?
+  room       LodgingRoom?     @relation(fields: [roomId], references: [id])
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+}
