@@ -26,6 +26,11 @@ export default function AdminLodgingManagement() {
   const [actionError, setActionError] = useState('')
   const [actionSuccess, setActionSuccess] = useState('')
 
+  // Filtering states
+  const [searchQuery, setSearchQuery] = useState('')
+  const [statusFilter, setStatusFilter] = useState('all')
+  const [locationFilter, setLocationFilter] = useState('all')
+
   useEffect(() => {
     fetchRequests()
     fetchLocations()
@@ -189,6 +194,21 @@ export default function AdminLodgingManagement() {
     ? approvalLocSelected.rooms.filter(r => r.status === 'available') 
     : []
 
+  const filteredRequests = requests.filter((req) => {
+    const matchSearch =
+      req.guestName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      req.account.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (req.guestEmail && req.guestEmail.toLowerCase().includes(searchQuery.toLowerCase()))
+
+    const matchStatus = statusFilter === 'all' || req.status === statusFilter
+
+    const matchLocation =
+      locationFilter === 'all' ||
+      (req.locationId && req.locationId.toString() === locationFilter)
+
+    return matchSearch && matchStatus && matchLocation
+  })
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto px-4 py-2">
       {/* Header */}
@@ -244,6 +264,52 @@ export default function AdminLodgingManagement() {
             <p className="text-xs text-slate-500 mt-0.5">Autoriza o rechaza reservaciones asignando habitaciones libres en tiempo real.</p>
           </div>
           
+          {/* Filters section */}
+          <div className="p-5 border-b border-slate-100 bg-slate-50/30 grid gap-4 sm:grid-cols-3">
+            {/* Search Input */}
+            <div>
+              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Buscar Huésped / Cuenta</label>
+              <input
+                type="text"
+                placeholder="Nombre o cuenta..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs focus:border-blue-500 font-medium"
+              />
+            </div>
+            
+            {/* Status Filter */}
+            <div>
+              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Estado</label>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs focus:border-blue-500 font-bold text-slate-700"
+              >
+                <option value="all">Todos los Estados</option>
+                <option value="pending">Pendientes</option>
+                <option value="approved">Aprobados</option>
+                <option value="rejected">Rechazados</option>
+                <option value="cancelled">Cancelados</option>
+              </select>
+            </div>
+
+            {/* Hotel/Location Filter */}
+            <div>
+              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Hotel / Local</label>
+              <select
+                value={locationFilter}
+                onChange={(e) => setLocationFilter(e.target.value)}
+                className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs focus:border-blue-500 font-bold text-slate-700"
+              >
+                <option value="all">Todos los Hoteles</option>
+                {locations.map(loc => (
+                  <option key={loc.id} value={loc.id}>{loc.name}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          
           {loadingRequests ? (
             <div className="py-20 text-center text-slate-500 animate-pulse font-medium">
               Cargando solicitudes de hospedaje...
@@ -262,8 +328,8 @@ export default function AdminLodgingManagement() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
-                  {requests.length > 0 ? (
-                    requests.map((req) => (
+                  {filteredRequests.length > 0 ? (
+                    filteredRequests.map((req) => (
                       <tr key={req.id} className="hover:bg-slate-50/30 transition">
                         <td className="px-6 py-4">
                           <div className="font-semibold text-slate-900">{req.guestName}</div>
