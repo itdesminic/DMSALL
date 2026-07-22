@@ -96,7 +96,18 @@ export default function AdminRadioReports() {
                           {new Date(report.createdAt).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
                         </span>
                       </td>
-                      <td className="px-5 py-4">{getReportTypeBadge(report.type)}</td>
+                      <td className="px-5 py-4">
+                        {getReportTypeBadge(report.type)}
+                        {report.type === 'failure' && report.isOperational !== null && (
+                          <div className="mt-1">
+                            {report.isOperational ? (
+                              <span className="text-[10px] bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded font-bold border border-emerald-150">Operativo</span>
+                            ) : (
+                              <span className="text-[10px] bg-rose-50 text-rose-700 px-1.5 py-0.5 rounded font-bold border border-rose-150">No Operativo</span>
+                            )}
+                          </div>
+                        )}
+                      </td>
                       <td className="px-5 py-4 text-slate-800">{report.site}</td>
                       <td className="px-5 py-4">
                         {report.radioSerial ? (

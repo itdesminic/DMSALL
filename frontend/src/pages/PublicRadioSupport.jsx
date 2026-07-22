@@ -18,6 +18,7 @@ export default function PublicRadioSupport() {
     site: 'La Libertad'
   })
   
+  const [isOperational, setIsOperational] = useState(true)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [isError, setIsError] = useState(false)
@@ -63,6 +64,7 @@ export default function PublicRadioSupport() {
     try {
       await api.post('/radios/reports', {
         type: reportType,
+        isOperational: reportType === 'failure' ? isOperational : null,
         ...formData
       })
       setMessage('¡Reporte de soporte enviado con éxito! El equipo de IT de tu sitio se pondrá en contacto pronto.')
@@ -74,6 +76,7 @@ export default function PublicRadioSupport() {
         description: '',
         site: 'La Libertad'
       })
+      setIsOperational(true)
     } catch (err) {
       console.error(err)
       setIsError(true)
@@ -270,6 +273,35 @@ export default function PublicRadioSupport() {
                 <option value="Siuna">Mina Siuna</option>
               </select>
             </div>
+
+            {/* Operability (Only for failures) */}
+            {reportType === 'failure' && (
+              <div className="bg-slate-50 p-4 border border-slate-200 rounded-xl space-y-2">
+                <label className="block text-xs font-bold text-slate-700 uppercase">¿El radio sigue encendiendo y operando?</label>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <label className="flex items-center gap-2 text-xs font-semibold text-slate-750 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="isOperational"
+                      checked={isOperational === true}
+                      onChange={() => setIsOperational(true)}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500"
+                    />
+                    Sí, sigue operativo (tiene una falla menor)
+                  </label>
+                  <label className="flex items-center gap-2 text-xs font-semibold text-slate-755 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="isOperational"
+                      checked={isOperational === false}
+                      onChange={() => setIsOperational(false)}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500"
+                    />
+                    No, está inoperativo / dañado
+                  </label>
+                </div>
+              </div>
+            )}
 
             {/* Description of problem */}
             <div>

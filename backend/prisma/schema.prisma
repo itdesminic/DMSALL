@@ -149,6 +149,7 @@ model RadioReport {
   reporterPosition String?
   description     String   // Detalles de la falla o solicitud
   status          String   @default("pending") // "pending", "in_progress", "resolved"
+  isOperational   Boolean? // Indica si sigue operativo durante la falla
   site            String   // Mina / Sitio para asignación local de IT
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt

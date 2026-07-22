@@ -249,7 +249,7 @@ export async function bulkUpload(req, res) {
 
 // 6. Submit Support Report (Public)
 export async function submitReport(req, res) {
-  const { type, radioSerial, radioIdCode, reporterName, reporterPosition, description, site } = req.body;
+  const { type, radioSerial, radioIdCode, reporterName, reporterPosition, description, site, isOperational } = req.body;
 
   if (!type || !reporterName || !description || !site) {
     return res.status(400).json({ error: 'Tipo de reporte, nombre del reportero, descripción y sitio/mina son obligatorios.' });
@@ -265,9 +265,29 @@ export async function submitReport(req, res) {
         reporterPosition: reporterPosition || null,
         description,
         site,
+        isOperational: typeof isOperational === 'boolean' ? isOperational : null,
         status: 'pending'
       }
     });
+
+    // Auto-update Radio Status based on Failure & Operability
+    if (radioSerial) {
+      const radio = await prisma.radio.findUnique({ where: { serial: radioSerial } });
+      if (radio) {
+        let newStatus = radio.status;
+        if (type === 'failure') {
+          newStatus = isOperational === false ? 'dañado' : 'mantenimiento';
+        } else if (type === 'maintenance') {
+          newStatus = 'mantenimiento';
+        }
+        
+        await prisma.radio.update({
+          where: { id: radio.id },
+          data: { status: newStatus }
+        });
+      }
+    }
+
     res.status(201).json(report);
   } catch (err) {
     console.error('Error al crear reporte de radio:', err);
