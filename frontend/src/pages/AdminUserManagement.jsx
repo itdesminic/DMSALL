@@ -21,7 +21,8 @@ export default function AdminUserManagement() {
     { key: 'lodging', label: '🏨 Hospedaje y Comida' },
     { key: 'vehicles', label: '⚙️ Adm. Camionetas' },
     { key: 'users', label: '👥 Usuarios y Roles' },
-    { key: 'radios_user', label: '📻 Soporte Radios (Usuario)' }
+    { key: 'radios_user_support', label: '🛎️ Reportar Caso (Radios)' },
+    { key: 'radios_user_reports', label: '📋 Mis Tickets (Radios)' }
   ]
 
   // Create User state

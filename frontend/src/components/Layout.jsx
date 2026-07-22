@@ -102,17 +102,21 @@ export default function Layout({ children }){
           )}
 
           {/* Group: Soporte Radios (Usuario) */}
-          {hasPermission('radios_user') && (
+          {(hasPermission('radios_user_support') || hasPermission('radios_user_reports')) && (
             <>
               <div className="pt-4 pb-1">
                 <span className="px-4 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Soporte Radios</span>
               </div>
-              <Link className={linkClass('/radios/user/soporte')} to="/radios/user/soporte" onClick={closeMobileMenu}>
-                🛎️ Reportar Caso
-              </Link>
-              <Link className={linkClass('/radios/user/reporte')} to="/radios/user/reporte" onClick={closeMobileMenu}>
-                📋 Mis Tickets
-              </Link>
+              {hasPermission('radios_user_support') && (
+                <Link className={linkClass('/radios/user/soporte')} to="/radios/user/soporte" onClick={closeMobileMenu}>
+                  🛎️ Reportar Caso
+                </Link>
+              )}
+              {hasPermission('radios_user_reports') && (
+                <Link className={linkClass('/radios/user/reporte')} to="/radios/user/reporte" onClick={closeMobileMenu}>
+                  📋 Mis Tickets
+                </Link>
+              )}
             </>
           )}
           
