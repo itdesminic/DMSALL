@@ -207,23 +207,23 @@ export default function App(){
   return (
     <Routes>
       <Route path="/login" element={<Login/>} />
-      <Route path="/" element={<ProtectedRoute requiredPermission="dashboard"><Layout><Dashboard/></Layout></ProtectedRoute>} />
-      <Route path="/checklist-reportes" element={<ProtectedRoute requiredPermission="checklists"><Layout><ChecklistReports/></Layout></ProtectedRoute>} />
+      <Route path="/" element={<Layout><ProtectedRoute requiredPermission="dashboard"><Dashboard/></ProtectedRoute></Layout>} />
+      <Route path="/checklist-reportes" element={<Layout><ProtectedRoute requiredPermission="checklists"><ChecklistReports/></ProtectedRoute></Layout>} />
       <Route path="/formularios" element={<FormsRoute />} />
       <Route path="/formularios/checkcamionetas" element={<PublicChecklistsRoute />} />
       <Route path="/crimea/muestras" element={<CrimeaSamplesRoute />} />
-      <Route path="/comida" element={<ProtectedRoute requiredPermission="food"><Layout><Food/></Layout></ProtectedRoute>} />
+      <Route path="/comida" element={<Layout><ProtectedRoute requiredPermission="food"><Food/></ProtectedRoute></Layout>} />
       <Route path="/radios/soporte" element={<PublicRadioSupport />} />
-      <Route path="/radios/itadmon" element={<ProtectedRoute allowedRoles={['admin']} requiredPermission="radios"><Layout><AdminRadioDashboard/></Layout></ProtectedRoute>} />
-      <Route path="/radios/itadmon/listado" element={<ProtectedRoute allowedRoles={['admin']} requiredPermission="radios"><Layout><AdminRadioList/></Layout></ProtectedRoute>} />
-      <Route path="/radios/itadmon/reportes" element={<ProtectedRoute allowedRoles={['admin']} requiredPermission="radios"><Layout><AdminRadioReports/></Layout></ProtectedRoute>} />
-      <Route path="/radios/itadmon/new" element={<ProtectedRoute allowedRoles={['admin']} requiredPermission="radios"><Layout><AdminRadioNew/></Layout></ProtectedRoute>} />
+      <Route path="/radios/itadmon" element={<Layout><ProtectedRoute allowedRoles={['admin']} requiredPermission="radios"><AdminRadioDashboard/></ProtectedRoute></Layout>} />
+      <Route path="/radios/itadmon/listado" element={<Layout><ProtectedRoute allowedRoles={['admin']} requiredPermission="radios"><AdminRadioList/></ProtectedRoute></Layout>} />
+      <Route path="/radios/itadmon/reportes" element={<Layout><ProtectedRoute allowedRoles={['admin']} requiredPermission="radios"><AdminRadioReports/></ProtectedRoute></Layout>} />
+      <Route path="/radios/itadmon/new" element={<Layout><ProtectedRoute allowedRoles={['admin']} requiredPermission="radios"><AdminRadioNew/></ProtectedRoute></Layout>} />
       <Route path="/radios" element={<Navigate replace to="/radios/soporte" />} />
-      <Route path="/salas" element={<ProtectedRoute requiredPermission="rooms"><Layout><Rooms/></Layout></ProtectedRoute>} />
+      <Route path="/salas" element={<Layout><ProtectedRoute requiredPermission="rooms"><Rooms/></ProtectedRoute></Layout>} />
       <Route path="/servicios/hospedaje/solicitud" element={<PublicLodgingRequest />} />
-      <Route path="/admin/hospedaje" element={<ProtectedRoute allowedRoles={['admin']} requiredPermission="lodging"><Layout><AdminLodgingManagement/></Layout></ProtectedRoute>} />
-      <Route path="/admin" element={<ProtectedRoute allowedRoles={['admin']} requiredPermission="vehicles"><Layout><Admin/></Layout></ProtectedRoute>} />
-      <Route path="/configuracion/usuarios" element={<ProtectedRoute allowedRoles={['admin']} requiredPermission="users"><Layout><AdminUserManagement/></Layout></ProtectedRoute>} />
+      <Route path="/admin/hospedaje" element={<Layout><ProtectedRoute allowedRoles={['admin']} requiredPermission="lodging"><AdminLodgingManagement/></ProtectedRoute></Layout>} />
+      <Route path="/admin" element={<Layout><ProtectedRoute allowedRoles={['admin']} requiredPermission="vehicles"><Admin/></ProtectedRoute></Layout>} />
+      <Route path="/configuracion/usuarios" element={<Layout><ProtectedRoute allowedRoles={['admin']} requiredPermission="users"><AdminUserManagement/></ProtectedRoute></Layout>} />
       <Route path="*" element={<Navigate replace to="/" />} />
     </Routes>
   )

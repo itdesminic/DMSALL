@@ -26,8 +26,14 @@ export default function ProtectedRoute({ children, allowedRoles = [], requiredPe
   if (requiredPermission && user.permissions) {
     const userPerms = user.permissions.split(',').map(p => p.trim())
     if (!userPerms.includes(requiredPermission)) {
-      // Redirect to dashboard if user doesn't have the required feature permission
-      return <Navigate to="/" replace />
+      return (
+        <div className="flex flex-col items-center justify-center p-12 text-center bg-white rounded-2xl border border-slate-200 shadow-sm max-w-md mx-auto my-12 animate-in fade-in duration-200">
+          <span className="text-4xl">⚠️</span>
+          <h2 className="text-lg font-bold text-slate-800 mt-4">Acceso Restringido</h2>
+          <p className="text-xs text-slate-500 mt-2">Tu cuenta de usuario no cuenta con los permisos requeridos para acceder a esta función.</p>
+          <p className="text-[10px] text-slate-400 mt-1 font-semibold">Contacta al administrador de IT de tu sitio si requieres acceso.</p>
+        </div>
+      )
     }
   }
 
