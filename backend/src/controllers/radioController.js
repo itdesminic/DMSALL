@@ -328,10 +328,40 @@ export async function updateReportStatus(req, res) {
 
   try {
     const reportId = parseInt(id, 10);
+    
+    const report = await prisma.radioReport.findUnique({
+      where: { id: reportId }
+    });
+
+    if (!report) {
+      return res.status(404).json({ error: 'Reporte de soporte no encontrado.' });
+    }
+
     const updated = await prisma.radioReport.update({
       where: { id: reportId },
       data: { status }
     });
+
+    // Automatically update associated Radio's status based on report status change
+    if (report.radioSerial) {
+      const radio = await prisma.radio.findUnique({
+        where: { serial: report.radioSerial }
+      });
+      if (radio) {
+        let newRadioStatus = radio.status;
+        if (status === 'in_progress') {
+          newRadioStatus = 'mantenimiento';
+        } else if (status === 'resolved') {
+          newRadioStatus = 'bueno';
+        }
+
+        await prisma.radio.update({
+          where: { id: radio.id },
+          data: { status: newRadioStatus }
+        });
+      }
+    }
+
     res.json(updated);
   } catch (err) {
     console.error('Error al actualizar reporte:', err);
