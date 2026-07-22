@@ -600,12 +600,12 @@ export default function AdminRadioList() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">ID Radio</label>
+                  <label className="block text-xs font-bold text-slate-400 uppercase mb-1">ID Radio (No Editable)</label>
                   <input
                     type="text"
+                    disabled
                     value={editFormData.radioIdCode}
-                    onChange={(e) => setEditFormData(prev => ({ ...prev, radioIdCode: e.target.value }))}
-                    className="w-full rounded-xl border border-slate-200 p-2.5 text-sm font-semibold"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-100 p-2.5 text-sm font-semibold text-slate-400 cursor-not-allowed"
                   />
                 </div>
                 <div>

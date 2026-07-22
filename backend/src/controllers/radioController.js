@@ -72,8 +72,16 @@ export async function createRadio(req, res) {
       return res.status(400).json({ error: 'Ya existe un radio registrado con este código de serie' });
     }
 
-    if (radioIdCode) {
-      const existingId = await prisma.radio.findUnique({ where: { radioIdCode } });
+    let finalRadioIdCode = radioIdCode;
+    if (!finalRadioIdCode) {
+      const allRadios = await prisma.radio.findMany({ select: { radioIdCode: true } });
+      const numericIds = allRadios
+        .map(r => parseInt(r.radioIdCode, 10))
+        .filter(id => !isNaN(id));
+      const maxId = numericIds.length > 0 ? Math.max(...numericIds) : 1000;
+      finalRadioIdCode = (maxId + 1).toString();
+    } else {
+      const existingId = await prisma.radio.findUnique({ where: { radioIdCode: finalRadioIdCode } });
       if (existingId) {
         return res.status(400).json({ error: 'Ya existe un radio registrado con este ID de Radio' });
       }
@@ -87,7 +95,7 @@ export async function createRadio(req, res) {
         site,
         company,
         serial,
-        radioIdCode,
+        radioIdCode: finalRadioIdCode,
         status: status || 'bueno',
         comments,
         assignedTo,

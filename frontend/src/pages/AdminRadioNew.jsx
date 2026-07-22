@@ -136,14 +136,14 @@ export default function AdminRadioNew() {
 
             {/* ID Radio */}
             <div>
-              <label className="block uppercase mb-1 text-blue-600">ID de Radio (Único)</label>
+              <label className="block uppercase mb-1 text-slate-400">ID de Radio (Autoincremental)</label>
               <input
                 type="text"
                 name="radioIdCode"
-                placeholder="ej: 1017"
+                placeholder="[Autogenerado]"
+                disabled
                 value={formData.radioIdCode}
-                onChange={handleChange}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-sm font-mono text-slate-900"
+                className="w-full rounded-xl border border-slate-200 bg-slate-100 p-2.5 text-sm font-mono text-slate-400 cursor-not-allowed"
               />
             </div>
           </div>
