@@ -100,6 +100,21 @@ export default function Layout({ children }){
               </Link>
             </>
           )}
+
+          {/* Group: Soporte Radios (Usuario) */}
+          {hasPermission('radios_user') && (
+            <>
+              <div className="pt-4 pb-1">
+                <span className="px-4 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Soporte Radios</span>
+              </div>
+              <Link className={linkClass('/radios/user/soporte')} to="/radios/user/soporte" onClick={closeMobileMenu}>
+                🛎️ Reportar Caso
+              </Link>
+              <Link className={linkClass('/radios/user/reporte')} to="/radios/user/reporte" onClick={closeMobileMenu}>
+                📋 Mis Tickets
+              </Link>
+            </>
+          )}
           
           {user?.role === 'admin' && (hasPermission('lodging') || hasPermission('vehicles')) && (
             <div className="pt-4 pb-1">

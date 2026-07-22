@@ -247,9 +247,10 @@ export async function bulkUpload(req, res) {
   }
 }
 
-// 6. Submit Support Report (Public)
+// 6. Submit Support Report (Public / User)
 export async function submitReport(req, res) {
   const { type, radioSerial, radioIdCode, radioAssignedTo, reporterName, reporterPosition, description, site, isOperational } = req.body;
+  const reporterEmail = req.user ? req.user.email : (req.body.reporterEmail || null);
 
   if (!type || !reporterName || !description || !site) {
     return res.status(400).json({ error: 'Tipo de reporte, nombre del reportero, descripción y sitio/mina son obligatorios.' });
@@ -263,6 +264,7 @@ export async function submitReport(req, res) {
         radioIdCode: radioIdCode ? radioIdCode.toString() : null,
         radioAssignedTo: radioAssignedTo || null,
         reporterName,
+        reporterEmail: reporterEmail || null,
         reporterPosition: reporterPosition || null,
         description,
         site,
@@ -366,5 +368,25 @@ export async function updateReportStatus(req, res) {
   } catch (err) {
     console.error('Error al actualizar reporte:', err);
     res.status(500).json({ error: 'Error al cambiar estado del reporte.' });
+  }
+}
+
+// 9. List My Support Reports (Client User)
+export async function listMyReports(req, res) {
+  if (!req.user) {
+    return res.status(401).json({ error: 'No autorizado.' });
+  }
+
+  try {
+    const reports = await prisma.radioReport.findMany({
+      where: {
+        reporterEmail: req.user.email
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(reports);
+  } catch (err) {
+    console.error('Error al listar mis reportes:', err);
+    res.status(500).json({ error: 'Error al obtener tus reportes de soporte.' });
   }
 }

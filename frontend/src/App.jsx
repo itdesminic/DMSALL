@@ -22,6 +22,8 @@ import AdminRadioList from './pages/AdminRadioList'
 import AdminRadioReports from './pages/AdminRadioReports'
 import AdminRadioNew from './pages/AdminRadioNew'
 import AdminUserManagement from './pages/AdminUserManagement'
+import UserRadioSupport from './pages/UserRadioSupport'
+import UserRadioReports from './pages/UserRadioReports'
 
 function FormsRoute() {
   const { user, loading } = useAuth()
@@ -218,6 +220,8 @@ export default function App(){
       <Route path="/radios/itadmon/listado" element={<Layout><ProtectedRoute requiredPermission="radios"><AdminRadioList/></ProtectedRoute></Layout>} />
       <Route path="/radios/itadmon/reportes" element={<Layout><ProtectedRoute requiredPermission="radios"><AdminRadioReports/></ProtectedRoute></Layout>} />
       <Route path="/radios/itadmon/new" element={<Layout><ProtectedRoute requiredPermission="radios"><AdminRadioNew/></ProtectedRoute></Layout>} />
+      <Route path="/radios/user/soporte" element={<Layout><ProtectedRoute requiredPermission="radios_user"><UserRadioSupport/></ProtectedRoute></Layout>} />
+      <Route path="/radios/user/reporte" element={<Layout><ProtectedRoute requiredPermission="radios_user"><UserRadioReports/></ProtectedRoute></Layout>} />
       <Route path="/radios" element={<Navigate replace to="/radios/soporte" />} />
       <Route path="/salas" element={<Layout><ProtectedRoute requiredPermission="rooms"><Rooms/></ProtectedRoute></Layout>} />
       <Route path="/servicios/hospedaje/solicitud" element={<PublicLodgingRequest />} />

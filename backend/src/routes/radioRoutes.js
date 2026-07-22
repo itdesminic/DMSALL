@@ -1,14 +1,15 @@
 import express from 'express';
 import { 
   listRadios, createRadio, updateRadio, deleteRadio, 
-  bulkUpload, submitReport, listReports, updateReportStatus 
+  bulkUpload, submitReport, listReports, updateReportStatus, listMyReports 
 } from '../controllers/radioController.js';
 import { authenticate, optionalAuthenticate } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-// Public routes
-router.post('/reports', submitReport);
+// Public / User routes
+router.post('/reports', optionalAuthenticate, submitReport);
+router.get('/my-reports', authenticate, listMyReports);
 
 // Authenticated/Optional routes
 router.get('/', optionalAuthenticate, listRadios);

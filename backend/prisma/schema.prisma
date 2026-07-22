@@ -148,6 +148,7 @@ model RadioReport {
   radioIdCode     String?
   radioAssignedTo String?  // Equipo/Usuario asignado al radio
   reporterName    String   // Quien reporta
+  reporterEmail   String?  // Correo del reportero para seguimiento del usuario
   reporterPosition String?
   description     String   // Detalles de la falla o solicitud
   status          String   @default("pending") // "pending", "in_progress", "resolved"

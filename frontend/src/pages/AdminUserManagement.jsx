@@ -20,7 +20,8 @@ export default function AdminUserManagement() {
     { key: 'crimea', label: '💧 Muestras Crimea' },
     { key: 'lodging', label: '🏨 Hospedaje y Comida' },
     { key: 'vehicles', label: '⚙️ Adm. Camionetas' },
-    { key: 'users', label: '👥 Usuarios y Roles' }
+    { key: 'users', label: '👥 Usuarios y Roles' },
+    { key: 'radios_user', label: '📻 Soporte Radios (Usuario)' }
   ]
 
   // Create User state
