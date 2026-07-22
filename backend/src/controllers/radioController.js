@@ -11,8 +11,8 @@ export async function listRadios(req, res) {
     
     let where = {};
     
-    // IT Admin Segmentation: Check if user is logged in, is admin, and has a specific site assigned
-    if (req.user && req.user.role === 'admin' && req.user.site && req.user.site !== 'Todos') {
+    // IT Admin Segmentation: Check if user is logged in and has a specific site assigned
+    if (req.user && req.user.site && req.user.site !== 'Todos') {
       where.site = req.user.site;
     } else if (site && site !== 'all') {
       // If Jefe de IT or public (who can select site)
@@ -304,7 +304,7 @@ export async function listReports(req, res) {
     let where = {};
 
     // IT Admin Site Segmentation
-    if (req.user && req.user.role === 'admin' && req.user.site && req.user.site !== 'Todos') {
+    if (req.user && req.user.site && req.user.site !== 'Todos') {
       where.site = req.user.site;
     }
 
