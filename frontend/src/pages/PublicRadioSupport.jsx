@@ -137,8 +137,8 @@ export default function PublicRadioSupport() {
 
           {/* Search Results */}
           {searchResults.length > 0 && (
-            <div className="border border-slate-100 rounded-xl overflow-hidden mt-4">
-              <table className="w-full text-left text-xs border-collapse">
+            <div className="border border-slate-100 rounded-xl overflow-x-auto mt-4">
+              <table className="w-full text-left text-xs border-collapse min-w-[600px]">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-200 text-[10px] font-bold text-slate-500 uppercase">
                     <th className="px-4 py-3">Serie</th>
