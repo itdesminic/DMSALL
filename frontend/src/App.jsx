@@ -24,6 +24,7 @@ import AdminRadioNew from './pages/AdminRadioNew'
 import AdminUserManagement from './pages/AdminUserManagement'
 import UserRadioSupport from './pages/UserRadioSupport'
 import UserRadioReports from './pages/UserRadioReports'
+import Welcome from './pages/Welcome'
 
 function FormsRoute() {
   const { user, loading } = useAuth()
@@ -209,7 +210,8 @@ export default function App(){
   return (
     <Routes>
       <Route path="/login" element={<Login/>} />
-      <Route path="/" element={<Layout><ProtectedRoute requiredPermission="dashboard"><Dashboard/></ProtectedRoute></Layout>} />
+      <Route path="/" element={<Layout><ProtectedRoute><Welcome/></ProtectedRoute></Layout>} />
+      <Route path="/dashboard" element={<Layout><ProtectedRoute requiredPermission="dashboard"><Dashboard/></ProtectedRoute></Layout>} />
       <Route path="/checklist-reportes" element={<Layout><ProtectedRoute requiredPermission="checklists"><ChecklistReports/></ProtectedRoute></Layout>} />
       <Route path="/formularios" element={<FormsRoute />} />
       <Route path="/formularios/checkcamionetas" element={<PublicChecklistsRoute />} />

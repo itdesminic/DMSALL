@@ -59,7 +59,7 @@ export default function Layout({ children }){
             </div>
           )}
           {hasPermission('dashboard') && (
-            <Link className={linkClass('/')} to="/" onClick={closeMobileMenu}>
+            <Link className={linkClass('/dashboard')} to="/dashboard" onClick={closeMobileMenu}>
               📊 Dashboard
             </Link>
           )}
