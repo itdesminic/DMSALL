@@ -214,10 +214,10 @@ export default function App(){
       <Route path="/crimea/muestras" element={<CrimeaSamplesRoute />} />
       <Route path="/comida" element={<Layout><ProtectedRoute requiredPermission="food"><Food/></ProtectedRoute></Layout>} />
       <Route path="/radios/soporte" element={<PublicRadioSupport />} />
-      <Route path="/radios/itadmon" element={<Layout><ProtectedRoute allowedRoles={['admin']} requiredPermission="radios"><AdminRadioDashboard/></ProtectedRoute></Layout>} />
-      <Route path="/radios/itadmon/listado" element={<Layout><ProtectedRoute allowedRoles={['admin']} requiredPermission="radios"><AdminRadioList/></ProtectedRoute></Layout>} />
-      <Route path="/radios/itadmon/reportes" element={<Layout><ProtectedRoute allowedRoles={['admin']} requiredPermission="radios"><AdminRadioReports/></ProtectedRoute></Layout>} />
-      <Route path="/radios/itadmon/new" element={<Layout><ProtectedRoute allowedRoles={['admin']} requiredPermission="radios"><AdminRadioNew/></ProtectedRoute></Layout>} />
+      <Route path="/radios/itadmon" element={<Layout><ProtectedRoute requiredPermission="radios"><AdminRadioDashboard/></ProtectedRoute></Layout>} />
+      <Route path="/radios/itadmon/listado" element={<Layout><ProtectedRoute requiredPermission="radios"><AdminRadioList/></ProtectedRoute></Layout>} />
+      <Route path="/radios/itadmon/reportes" element={<Layout><ProtectedRoute requiredPermission="radios"><AdminRadioReports/></ProtectedRoute></Layout>} />
+      <Route path="/radios/itadmon/new" element={<Layout><ProtectedRoute requiredPermission="radios"><AdminRadioNew/></ProtectedRoute></Layout>} />
       <Route path="/radios" element={<Navigate replace to="/radios/soporte" />} />
       <Route path="/salas" element={<Layout><ProtectedRoute requiredPermission="rooms"><Rooms/></ProtectedRoute></Layout>} />
       <Route path="/servicios/hospedaje/solicitud" element={<PublicLodgingRequest />} />

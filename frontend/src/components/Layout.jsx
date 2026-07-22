@@ -95,7 +95,7 @@ export default function Layout({ children }){
               <div className="pt-4 pb-1">
                 <span className="px-4 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Servicios de IT</span>
               </div>
-              <Link className={linkClass('/radios')} to={user?.role === 'admin' ? "/radios/itadmon" : "/radios/soporte"} onClick={closeMobileMenu}>
+              <Link className={linkClass('/radios')} to="/radios/itadmon" onClick={closeMobileMenu}>
                 📻 Inventario Radios
               </Link>
             </>
