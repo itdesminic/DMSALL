@@ -265,7 +265,9 @@ export default function PublicRadioSupport() {
               >
                 <option value="La Libertad">Mina La Libertad</option>
                 <option value="El Limon">Mina El Limón</option>
-                <option value="Bonanza">Mina Bonanza</option>
+                <option value="EBM">Mina EBM</option>
+                <option value="Pavon">Mina Pavon</option>
+                <option value="Siuna">Mina Siuna</option>
               </select>
             </div>
 

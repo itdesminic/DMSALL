@@ -214,7 +214,9 @@ export default function AdminRadioNew() {
               >
                 <option value="La Libertad">La Libertad</option>
                 <option value="El Limon">El Limón</option>
-                <option value="Bonanza">Bonanza</option>
+                <option value="EBM">EBM</option>
+                <option value="Pavon">Pavon</option>
+                <option value="Siuna">Siuna</option>
               </select>
             </div>
           </div>

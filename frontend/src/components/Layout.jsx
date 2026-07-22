@@ -74,7 +74,7 @@ export default function Layout({ children }){
                 🏨 Hospedaje y Comida
               </Link>
               <Link className={linkClass('/admin')} to="/admin" onClick={closeMobileMenu}>
-                ⚙️ Administración
+                ⚙️ Adm. Camionetas
               </Link>
             </>
           )}
