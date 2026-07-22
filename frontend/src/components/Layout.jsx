@@ -23,6 +23,12 @@ export default function Layout({ children }){
 
   const closeMobileMenu = () => setIsMobileMenuOpen(false)
 
+  const hasPermission = (key) => {
+    if (!user) return false
+    if (!user.permissions) return true
+    return user.permissions.split(',').map(p => p.trim()).includes(key)
+  }
+
   const SidebarContent = () => (
     <>
       <div>
@@ -46,40 +52,61 @@ export default function Layout({ children }){
 
         {/* Navigation links */}
         <nav className="space-y-1.5">
-          <Link className={linkClass('/')} to="/" onClick={closeMobileMenu}>
-            📊 Dashboard
-          </Link>
-          <Link className={linkClass('/formularios')} to="/formularios" onClick={closeMobileMenu}>
-            📝 Formularios
-          </Link>
-          <Link className={linkClass('/checklist-reportes')} to="/checklist-reportes" onClick={closeMobileMenu}>
-            📋 Reportes Checklist
-          </Link>
-          <Link className={linkClass('/comida')} to="/comida" onClick={closeMobileMenu}>
-            🍽️ Menú Semanal
-          </Link>
-          <Link className={linkClass('/radios')} to={user?.role === 'admin' ? "/radios/itadmon" : "/radios/soporte"} onClick={closeMobileMenu}>
-            📻 Inventario Radios
-          </Link>
-          <Link className={linkClass('/salas')} to="/salas" onClick={closeMobileMenu}>
-            📅 Salas de Reunión
-          </Link>
-          <Link className={linkClass('/crimea/muestras')} to="/crimea/muestras" onClick={closeMobileMenu}>
-            💧 Muestras Crimea
-          </Link>
+          {hasPermission('dashboard') && (
+            <Link className={linkClass('/')} to="/" onClick={closeMobileMenu}>
+              📊 Dashboard
+            </Link>
+          )}
+          {hasPermission('forms') && (
+            <Link className={linkClass('/formularios')} to="/formularios" onClick={closeMobileMenu}>
+              📝 Formularios
+            </Link>
+          )}
+          {hasPermission('checklists') && (
+            <Link className={linkClass('/checklist-reportes')} to="/checklist-reportes" onClick={closeMobileMenu}>
+              📋 Reportes Checklist
+            </Link>
+          )}
+          {hasPermission('food') && (
+            <Link className={linkClass('/comida')} to="/comida" onClick={closeMobileMenu}>
+              🍽️ Menú Semanal
+            </Link>
+          )}
+          {hasPermission('radios') && (
+            <Link className={linkClass('/radios')} to={user?.role === 'admin' ? "/radios/itadmon" : "/radios/soporte"} onClick={closeMobileMenu}>
+              📻 Inventario Radios
+            </Link>
+          )}
+          {hasPermission('rooms') && (
+            <Link className={linkClass('/salas')} to="/salas" onClick={closeMobileMenu}>
+              📅 Salas de Reunión
+            </Link>
+          )}
+          {hasPermission('crimea') && (
+            <Link className={linkClass('/crimea/muestras')} to="/crimea/muestras" onClick={closeMobileMenu}>
+              💧 Muestras Crimea
+            </Link>
+          )}
           
-          {user?.role === 'admin' && (
-            <>
-              <div className="pt-4 pb-1">
-                <span className="px-4 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Servicios Generales</span>
-              </div>
-              <Link className={linkClass('/admin/hospedaje')} to="/admin/hospedaje" onClick={closeMobileMenu}>
-                🏨 Hospedaje y Comida
-              </Link>
-              <Link className={linkClass('/admin')} to="/admin" onClick={closeMobileMenu}>
-                ⚙️ Adm. Camionetas
-              </Link>
+          {user?.role === 'admin' && (hasPermission('lodging') || hasPermission('vehicles')) && (
+            <div className="pt-4 pb-1">
+              <span className="px-4 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Servicios Generales</span>
+            </div>
+          )}
+          
+          {user?.role === 'admin' && hasPermission('lodging') && (
+            <Link className={linkClass('/admin/hospedaje')} to="/admin/hospedaje" onClick={closeMobileMenu}>
+              🏨 Hospedaje y Comida
+            </Link>
+          )}
+          {user?.role === 'admin' && hasPermission('vehicles') && (
+            <Link className={linkClass('/admin')} to="/admin" onClick={closeMobileMenu}>
+              ⚙️ Adm. Camionetas
+            </Link>
+          )}
 
+          {user?.role === 'admin' && hasPermission('users') && (
+            <>
               <div className="pt-4 pb-1">
                 <span className="px-4 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Configuración</span>
               </div>

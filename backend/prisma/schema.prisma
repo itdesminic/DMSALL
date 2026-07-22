@@ -14,6 +14,7 @@ model User {
   password             String
   role                 String                 @default("user")
   site                 String?                // Sitio asignado (ej: "La Libertad", "El Limon", o "Todos" para el jefe)
+  permissions          String?                // Lista de permisos separados por coma (ej: "dashboard,forms,food")
   createdAt            DateTime               @default(now())
   updatedAt            DateTime               @updatedAt
   formSubmissions      FormSubmission[]

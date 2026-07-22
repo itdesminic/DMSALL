@@ -9,6 +9,20 @@ export default function AdminUserManagement() {
   const [actionSuccess, setActionSuccess] = useState('')
   const [actionError, setActionError] = useState('')
 
+  // Available features list
+  const availableFeatures = [
+    { key: 'dashboard', label: '📊 Dashboard' },
+    { key: 'forms', label: '📝 Formularios' },
+    { key: 'checklists', label: '📋 Reportes Checklist' },
+    { key: 'food', label: '🍽️ Menú Semanal' },
+    { key: 'radios', label: '📻 Inventario Radios' },
+    { key: 'rooms', label: '📅 Salas de Reunión' },
+    { key: 'crimea', label: '💧 Muestras Crimea' },
+    { key: 'lodging', label: '🏨 Hospedaje y Comida' },
+    { key: 'vehicles', label: '⚙️ Adm. Camionetas' },
+    { key: 'users', label: '👥 Usuarios y Roles' }
+  ]
+
   // Create User state
   const [showAddModal, setShowAddModal] = useState(false)
   const [newUserData, setNewUserData] = useState({
@@ -16,7 +30,8 @@ export default function AdminUserManagement() {
     email: '',
     password: '',
     role: 'user',
-    site: 'La Libertad'
+    site: 'La Libertad',
+    permissions: [] // Array of keys
   })
   const [submittingNew, setSubmittingNew] = useState(false)
 
@@ -27,7 +42,8 @@ export default function AdminUserManagement() {
     email: '',
     password: '', // optional to change
     role: 'user',
-    site: 'La Libertad'
+    site: 'La Libertad',
+    permissions: [] // Array of keys
   })
   const [submittingEdit, setSubmittingEdit] = useState(false)
 
@@ -56,14 +72,19 @@ export default function AdminUserManagement() {
     setActionSuccess('')
     setActionError('')
     try {
-      await api.post('/users', newUserData)
+      const payload = {
+        ...newUserData,
+        permissions: newUserData.permissions.join(',')
+      }
+      await api.post('/users', payload)
       setActionSuccess(`Usuario ${newUserData.email} creado con éxito.`)
       setNewUserData({
         name: '',
         email: '',
         password: '',
         role: 'user',
-        site: 'La Libertad'
+        site: 'La Libertad',
+        permissions: []
       })
       setShowAddModal(false)
       fetchUsers()
@@ -82,7 +103,8 @@ export default function AdminUserManagement() {
       email: user.email || '',
       password: '', // leave empty to not change
       role: user.role || 'user',
-      site: user.site || 'La Libertad'
+      site: user.site || 'La Libertad',
+      permissions: user.permissions ? user.permissions.split(',').map(p => p.trim()) : []
     })
   }
 
@@ -92,7 +114,10 @@ export default function AdminUserManagement() {
     setActionSuccess('')
     setActionError('')
     try {
-      const dataToSend = { ...editUserData }
+      const dataToSend = {
+        ...editUserData,
+        permissions: editUserData.permissions.join(',')
+      }
       if (!dataToSend.password || dataToSend.password.trim() === '') {
         delete dataToSend.password
       }
@@ -127,13 +152,34 @@ export default function AdminUserManagement() {
     }
   }
 
+  // Helper toggle permissions
+  const togglePermission = (key, type) => {
+    if (type === 'new') {
+      setNewUserData(prev => {
+        const exist = prev.permissions.includes(key)
+        const newPerms = exist 
+          ? prev.permissions.filter(p => p !== key) 
+          : [...prev.permissions, key]
+        return { ...prev, permissions: newPerms }
+      })
+    } else {
+      setEditUserData(prev => {
+        const exist = prev.permissions.includes(key)
+        const newPerms = exist 
+          ? prev.permissions.filter(p => p !== key) 
+          : [...prev.permissions, key]
+        return { ...prev, permissions: newPerms }
+      })
+    }
+  }
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto px-4 py-2">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4">
         <div>
           <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Gestión de Usuarios y Roles</h1>
-          <p className="text-sm text-slate-500 mt-1">Administra los usuarios del sistema, sus roles (Admin / Usuario) y sus sitios de trabajo asignados.</p>
+          <p className="text-sm text-slate-500 mt-1">Administra accesos y define qué funciones del sistema puede visualizar cada usuario.</p>
         </div>
         <div>
           <button
@@ -164,7 +210,7 @@ export default function AdminUserManagement() {
       <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
         <div className="border-b border-slate-100 p-5 bg-slate-50/50">
           <h2 className="text-md font-bold text-slate-900 font-sans">Usuarios Registrados</h2>
-          <p className="text-xs text-slate-500 mt-0.5">Listado completo de cuentas del sistema con sus accesos locales y globales.</p>
+          <p className="text-xs text-slate-500 mt-0.5">Define permisos específicos por módulo para segmentar el acceso de cada operador.</p>
         </div>
 
         {loading ? (
@@ -176,11 +222,10 @@ export default function AdminUserManagement() {
             <table className="w-full text-left text-sm border-collapse">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase">
-                  <th className="px-6 py-4">Nombre</th>
-                  <th className="px-6 py-4">Correo Electrónico</th>
+                  <th className="px-6 py-4">Nombre / Correo</th>
                   <th className="px-6 py-4">Rol</th>
                   <th className="px-6 py-4">Sitio Autorizado</th>
-                  <th className="px-6 py-4">Fecha Registro</th>
+                  <th className="px-6 py-4">Funciones Permitidas</th>
                   <th className="px-6 py-4 text-right">Acciones</th>
                 </tr>
               </thead>
@@ -190,8 +235,8 @@ export default function AdminUserManagement() {
                     <tr key={u.id} className="hover:bg-slate-50/30 transition">
                       <td className="px-6 py-4">
                         <div className="font-semibold text-slate-900">{u.name || 'Sin nombre'}</div>
+                        <div className="font-mono text-[11px] text-slate-400 mt-0.5">{u.email}</div>
                       </td>
-                      <td className="px-6 py-4 font-mono text-xs">{u.email}</td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-bold border uppercase tracking-wider ${
                           u.role === 'admin'
@@ -203,11 +248,26 @@ export default function AdminUserManagement() {
                       </td>
                       <td className="px-6 py-4">
                         <span className={`font-semibold ${u.site === 'Todos' ? 'text-blue-600' : 'text-slate-800'}`}>
-                          {u.site || 'Sin sitio asignado'}
+                          {u.site || 'Sin sitio'}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-xs text-slate-400">
-                        {new Date(u.createdAt).toLocaleDateString('es-ES')}
+                      <td className="px-6 py-4">
+                        <div className="flex flex-wrap gap-1 max-w-sm">
+                          {u.permissions ? (
+                            u.permissions.split(',').map(p => {
+                              const match = availableFeatures.find(f => f.key === p.trim())
+                              return (
+                                <span key={p} className="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-bold border border-slate-200">
+                                  {match ? match.label : p}
+                                </span>
+                              )
+                            })
+                          ) : (
+                            <span className="text-[10px] text-slate-400 font-semibold bg-blue-50 text-blue-700 px-2 py-0.5 rounded border border-blue-150">
+                              ★ Acceso Total
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="inline-flex gap-2">
@@ -230,7 +290,7 @@ export default function AdminUserManagement() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="6" className="text-center py-20 text-slate-400">
+                    <td colSpan="5" className="text-center py-20 text-slate-400">
                       No se encontraron usuarios registrados.
                     </td>
                   </tr>
@@ -244,11 +304,11 @@ export default function AdminUserManagement() {
       {/* CREATE MODAL */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="relative w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden animate-in zoom-in-95 duration-200">
+          <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-xl overflow-hidden animate-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4 bg-slate-50">
               <div>
                 <h3 className="text-md font-bold text-slate-900">Agregar Nuevo Usuario</h3>
-                <p className="text-xs text-slate-500 mt-0.5">Registra una nueva cuenta e indica su rol y sitio.</p>
+                <p className="text-xs text-slate-500 mt-0.5">Registra una nueva cuenta e indica su rol, sitio y permisos.</p>
               </div>
               <button
                 onClick={() => setShowAddModal(false)}
@@ -258,7 +318,7 @@ export default function AdminUserManagement() {
               </button>
             </div>
             
-            <form onSubmit={handleCreateUser} className="p-6 space-y-4">
+            <form onSubmit={handleCreateUser} className="p-6 space-y-4 max-h-[85vh] overflow-y-auto">
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5">Nombre Completo</label>
                 <input
@@ -320,6 +380,26 @@ export default function AdminUserManagement() {
                 </div>
               </div>
 
+              {/* PERMISSIONS SELECTION */}
+              <div className="border border-slate-100 rounded-xl p-4 bg-slate-50/50 space-y-2">
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5">
+                  Módulos Permitidos (Si no marcas ninguno, tendrá Acceso Total)
+                </label>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  {availableFeatures.map(feat => (
+                    <label key={feat.key} className="flex items-center gap-2 font-medium text-slate-750 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={newUserData.permissions.includes(feat.key)}
+                        onChange={() => togglePermission(feat.key, 'new')}
+                        className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      {feat.label}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
               <div className="flex justify-end gap-3 pt-3 border-t border-slate-100">
                 <button
                   type="button"
@@ -344,7 +424,7 @@ export default function AdminUserManagement() {
       {/* EDIT MODAL */}
       {editingUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="relative w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden animate-in zoom-in-95 duration-200">
+          <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-xl overflow-hidden animate-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4 bg-slate-50">
               <div>
                 <h3 className="text-md font-bold text-slate-900">Editar Usuario</h3>
@@ -358,7 +438,7 @@ export default function AdminUserManagement() {
               </button>
             </div>
             
-            <form onSubmit={handleEditSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleEditSubmit} className="p-6 space-y-4 max-h-[85vh] overflow-y-auto">
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5">Nombre Completo</label>
                 <input
@@ -414,6 +494,26 @@ export default function AdminUserManagement() {
                   >
                     {sites.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
+                </div>
+              </div>
+
+              {/* PERMISSIONS SELECTION */}
+              <div className="border border-slate-100 rounded-xl p-4 bg-slate-50/50 space-y-2">
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5">
+                  Módulos Permitidos (Si no marcas ninguno, tendrá Acceso Total)
+                </label>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  {availableFeatures.map(feat => (
+                    <label key={feat.key} className="flex items-center gap-2 font-medium text-slate-750 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={editUserData.permissions.includes(feat.key)}
+                        onChange={() => togglePermission(feat.key, 'edit')}
+                        className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      {feat.label}
+                    </label>
+                  ))}
                 </div>
               </div>
 

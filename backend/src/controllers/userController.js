@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 
 // 1. Create User
 export async function createUser(req, res) {
-  const { name, email, password, role, site } = req.body;
+  const { name, email, password, role, site, permissions } = req.body;
   if (!email || !password) {
     return res.status(400).json({ error: 'Email y contraseña requeridos.' });
   }
@@ -22,7 +22,8 @@ export async function createUser(req, res) {
         email,
         password: hashed,
         role: role || 'user',
-        site: site || null
+        site: site || null,
+        permissions: permissions || null
       }
     });
 
@@ -45,6 +46,7 @@ export async function listUsers(req, res) {
         email: true,
         role: true,
         site: true,
+        permissions: true,
         createdAt: true
       },
       orderBy: { createdAt: 'desc' }
@@ -59,7 +61,7 @@ export async function listUsers(req, res) {
 // 3. Update User
 export async function updateUser(req, res) {
   const { id } = req.params;
-  const { name, email, password, role, site } = req.body;
+  const { name, email, password, role, site, permissions } = req.body;
 
   try {
     const userId = parseInt(id, 10);
@@ -80,7 +82,8 @@ export async function updateUser(req, res) {
       name,
       email,
       role,
-      site
+      site,
+      permissions
     };
 
     if (password && password.trim() !== '') {

@@ -2,7 +2,7 @@ import React from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
-export default function ProtectedRoute({ children, allowedRoles = [] }) {
+export default function ProtectedRoute({ children, allowedRoles = [], requiredPermission }) {
   const { user, loading } = useAuth()
 
   if (loading) {
@@ -21,6 +21,14 @@ export default function ProtectedRoute({ children, allowedRoles = [] }) {
   if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
     // Redirect to dashboard if user doesn't have the required role
     return <Navigate to="/" replace />
+  }
+
+  if (requiredPermission && user.permissions) {
+    const userPerms = user.permissions.split(',').map(p => p.trim())
+    if (!userPerms.includes(requiredPermission)) {
+      // Redirect to dashboard if user doesn't have the required feature permission
+      return <Navigate to="/" replace />
+    }
   }
 
   return children
