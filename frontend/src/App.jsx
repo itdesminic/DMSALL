@@ -21,6 +21,7 @@ import AdminRadioDashboard from './pages/AdminRadioDashboard'
 import AdminRadioList from './pages/AdminRadioList'
 import AdminRadioReports from './pages/AdminRadioReports'
 import AdminRadioNew from './pages/AdminRadioNew'
+import AdminUserManagement from './pages/AdminUserManagement'
 
 function FormsRoute() {
   const { user, loading } = useAuth()
@@ -216,6 +217,7 @@ export default function App(){
       <Route path="/servicios/hospedaje/solicitud" element={<PublicLodgingRequest />} />
       <Route path="/admin/hospedaje" element={<ProtectedRoute allowedRoles={['admin']}><Layout><AdminLodgingManagement/></Layout></ProtectedRoute>} />
       <Route path="/admin" element={<ProtectedRoute allowedRoles={['admin']}><Layout><Admin/></Layout></ProtectedRoute>} />
+      <Route path="/configuracion/usuarios" element={<ProtectedRoute allowedRoles={['admin']}><Layout><AdminUserManagement/></Layout></ProtectedRoute>} />
       <Route path="*" element={<Navigate replace to="/" />} />
     </Routes>
   )

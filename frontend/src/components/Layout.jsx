@@ -70,11 +70,21 @@ export default function Layout({ children }){
           
           {user?.role === 'admin' && (
             <>
+              <div className="pt-4 pb-1">
+                <span className="px-4 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Servicios Generales</span>
+              </div>
               <Link className={linkClass('/admin/hospedaje')} to="/admin/hospedaje" onClick={closeMobileMenu}>
                 🏨 Hospedaje y Comida
               </Link>
               <Link className={linkClass('/admin')} to="/admin" onClick={closeMobileMenu}>
                 ⚙️ Adm. Camionetas
+              </Link>
+
+              <div className="pt-4 pb-1">
+                <span className="px-4 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Configuración</span>
+              </div>
+              <Link className={linkClass('/configuracion/usuarios')} to="/configuracion/usuarios" onClick={closeMobileMenu}>
+                👥 Usuarios y Roles
               </Link>
             </>
           )}
