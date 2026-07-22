@@ -13,6 +13,7 @@ model User {
   email                String                 @unique
   password             String
   role                 String                 @default("user")
+  site                 String?                // Sitio asignado (ej: "La Libertad", "El Limon", o "Todos" para el jefe)
   createdAt            DateTime               @default(now())
   updatedAt            DateTime               @updatedAt
   formSubmissions      FormSubmission[]
@@ -112,15 +113,19 @@ model Vehicle {
 
 model Radio {
   id             Int             @id @default(autoincrement())
-  brand          String?
-  model          String?
-  site           String?
-  company        String?
-  serial         String?         @unique
-  status         String          @default("bueno")
+  brand          String?         // MARCA (Motorola, etc.)
+  model          String?         // MODELO (DEP250, etc.)
+  type           String?         // TIPO (Portátil, Base, Repetidora)
+  serial         String?         @unique // SERIE (ej. 278EBJ1553)
+  radioIdCode    String?         @unique // ID RADIO (ej. 1017)
+  channels       String?         // Canales (ej. 1, 16)
+  assignedTo     String?         // Equipo/Usuario
+  area           String?         // Area (ej. mina)
+  position       String?         // Puesto (ej. OPERADORES DE MOJON)
+  company        String?         // Ubicacion/Empresa (ej. CONEQUISA)
+  site           String?         // Sitio (La Libertad, El Limon, Bonanza, etc.)
+  status         String          @default("bueno") // "bueno", "mantenimiento", "dañado"
   comments       String?
-  assignedTo     String?
-  channels       String?
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @default(now()) @updatedAt
   radioMovements RadioMovement[]
@@ -133,6 +138,20 @@ model RadioMovement {
   fromArea String?
   toArea   String?
   at       DateTime @default(now())
+}
+
+model RadioReport {
+  id              Int      @id @default(autoincrement())
+  type            String   // "failure" (Falla), "maintenance" (Mantenimiento), "request_new" (Solicitud)
+  radioSerial     String?  // Relacionado opcionalmente a un radio
+  radioIdCode     String?
+  reporterName    String   // Quien reporta
+  reporterPosition String?
+  description     String   // Detalles de la falla o solicitud
+  status          String   @default("pending") // "pending", "in_progress", "resolved"
+  site            String   // Mina / Sitio para asignación local de IT
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 model MeetingRoom {

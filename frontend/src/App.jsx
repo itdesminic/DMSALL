@@ -16,6 +16,11 @@ import AdminLodgingManagement from './pages/AdminLodgingManagement'
 import Layout from './components/Layout'
 import ProtectedRoute from './components/ProtectedRoute'
 import { useAuth } from './context/AuthContext'
+import PublicRadioSupport from './pages/PublicRadioSupport'
+import AdminRadioDashboard from './pages/AdminRadioDashboard'
+import AdminRadioList from './pages/AdminRadioList'
+import AdminRadioReports from './pages/AdminRadioReports'
+import AdminRadioNew from './pages/AdminRadioNew'
 
 function FormsRoute() {
   const { user, loading } = useAuth()
@@ -201,9 +206,12 @@ export default function App(){
       <Route path="/formularios/checkcamionetas" element={<PublicChecklistsRoute />} />
       <Route path="/crimea/muestras" element={<CrimeaSamplesRoute />} />
       <Route path="/comida" element={<ProtectedRoute><Layout><Food/></Layout></ProtectedRoute>} />
-      <Route path="/radios/registro" element={<RadioRegistryRoute />} />
-      <Route path="/radios/listado" element={<ProtectedRoute><Layout><Radios/></Layout></ProtectedRoute>} />
-      <Route path="/radios" element={<Navigate replace to="/radios/listado" />} />
+      <Route path="/radios/soporte" element={<PublicRadioSupport />} />
+      <Route path="/radios/itadmon" element={<ProtectedRoute allowedRoles={['admin']}><Layout><AdminRadioDashboard/></Layout></ProtectedRoute>} />
+      <Route path="/radios/itadmon/listado" element={<ProtectedRoute allowedRoles={['admin']}><Layout><AdminRadioList/></Layout></ProtectedRoute>} />
+      <Route path="/radios/itadmon/reportes" element={<ProtectedRoute allowedRoles={['admin']}><Layout><AdminRadioReports/></Layout></ProtectedRoute>} />
+      <Route path="/radios/itadmon/new" element={<ProtectedRoute allowedRoles={['admin']}><Layout><AdminRadioNew/></Layout></ProtectedRoute>} />
+      <Route path="/radios" element={<Navigate replace to="/radios/soporte" />} />
       <Route path="/salas" element={<ProtectedRoute><Layout><Rooms/></Layout></ProtectedRoute>} />
       <Route path="/servicios/hospedaje/solicitud" element={<PublicLodgingRequest />} />
       <Route path="/admin/hospedaje" element={<ProtectedRoute allowedRoles={['admin']}><Layout><AdminLodgingManagement/></Layout></ProtectedRoute>} />

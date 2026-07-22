@@ -30,6 +30,7 @@ export async function authenticate(req, res, next) {
       email: user.email,
       role: user.role,
       name: user.name,
+      site: user.site,
     };
     next();
   } catch (err) {
@@ -64,6 +65,7 @@ export async function optionalAuthenticate(req, res, next) {
         email: user.email,
         role: user.role,
         name: user.name,
+        site: user.site,
       };
     }
     next();

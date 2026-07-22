@@ -58,7 +58,7 @@ export default function Layout({ children }){
           <Link className={linkClass('/comida')} to="/comida" onClick={closeMobileMenu}>
             🍽️ Menú Semanal
           </Link>
-          <Link className={linkClass('/radios')} to="/radios" onClick={closeMobileMenu}>
+          <Link className={linkClass('/radios')} to={user?.role === 'admin' ? "/radios/itadmon" : "/radios/soporte"} onClick={closeMobileMenu}>
             📻 Inventario Radios
           </Link>
           <Link className={linkClass('/salas')} to="/salas" onClick={closeMobileMenu}>
