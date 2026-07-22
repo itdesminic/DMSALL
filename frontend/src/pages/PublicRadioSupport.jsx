@@ -143,7 +143,6 @@ export default function PublicRadioSupport() {
                   <tr className="bg-slate-50 border-b border-slate-200 text-[10px] font-bold text-slate-500 uppercase">
                     <th className="px-4 py-3 text-center">Acción</th>
                     <th className="px-4 py-3">Serie</th>
-                    <th className="px-4 py-3">ID Radio</th>
                     <th className="px-4 py-3">Usuario</th>
                     <th className="px-4 py-3">Sitio / Mina</th>
                   </tr>
@@ -160,7 +159,6 @@ export default function PublicRadioSupport() {
                         </button>
                       </td>
                       <td className="px-4 py-3 font-mono">{radio.serial}</td>
-                      <td className="px-4 py-3 font-semibold">{radio.radioIdCode || '-'}</td>
                       <td className="px-4 py-3 text-slate-900">{radio.assignedTo || 'Sin asignar'}</td>
                       <td className="px-4 py-3">{radio.site}</td>
                     </tr>
