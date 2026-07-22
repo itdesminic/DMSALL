@@ -113,7 +113,8 @@ export default function AdminRadioReports() {
                         {report.radioSerial ? (
                           <div className="text-xs">
                             <span className="font-mono text-slate-800 block">S/N: {report.radioSerial}</span>
-                            {report.radioIdCode && <span className="text-[10px] text-slate-400 font-mono">ID: {report.radioIdCode}</span>}
+                            {report.radioIdCode && <span className="text-[10px] text-slate-400 font-mono block">ID: {report.radioIdCode}</span>}
+                            {report.radioAssignedTo && <span className="text-[10px] text-blue-600 font-bold block mt-0.5">Asignado: {report.radioAssignedTo}</span>}
                           </div>
                         ) : (
                           <span className="text-slate-400 font-normal">Sin radio asociado</span>

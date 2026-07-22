@@ -249,7 +249,7 @@ export async function bulkUpload(req, res) {
 
 // 6. Submit Support Report (Public)
 export async function submitReport(req, res) {
-  const { type, radioSerial, radioIdCode, reporterName, reporterPosition, description, site, isOperational } = req.body;
+  const { type, radioSerial, radioIdCode, radioAssignedTo, reporterName, reporterPosition, description, site, isOperational } = req.body;
 
   if (!type || !reporterName || !description || !site) {
     return res.status(400).json({ error: 'Tipo de reporte, nombre del reportero, descripción y sitio/mina son obligatorios.' });
@@ -261,6 +261,7 @@ export async function submitReport(req, res) {
         type,
         radioSerial: radioSerial || null,
         radioIdCode: radioIdCode ? radioIdCode.toString() : null,
+        radioAssignedTo: radioAssignedTo || null,
         reporterName,
         reporterPosition: reporterPosition || null,
         description,

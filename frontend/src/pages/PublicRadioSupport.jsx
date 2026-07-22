@@ -12,6 +12,7 @@ export default function PublicRadioSupport() {
   const [formData, setFormData] = useState({
     radioSerial: '',
     radioIdCode: '',
+    radioAssignedTo: '',
     reporterName: '',
     reporterPosition: '',
     description: '',
@@ -48,6 +49,7 @@ export default function PublicRadioSupport() {
       ...prev,
       radioSerial: radio.serial || '',
       radioIdCode: radio.radioIdCode || '',
+      radioAssignedTo: radio.assignedTo || '',
       site: radio.site || 'La Libertad'
     }))
     // Scroll smoothly to report form
@@ -71,6 +73,7 @@ export default function PublicRadioSupport() {
       setFormData({
         radioSerial: '',
         radioIdCode: '',
+        radioAssignedTo: '',
         reporterName: '',
         reporterPosition: '',
         description: '',
@@ -216,16 +219,16 @@ export default function PublicRadioSupport() {
                 />
               </div>
 
-              {/* ID Radio (Opcional) */}
+              {/* Usuario o Equipo Asignado */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5">ID del Radio (Opcional)</label>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5">Usuario o Equipo Asignado</label>
                 <input
                   type="text"
-                  name="radioIdCode"
-                  placeholder="ej: 1017"
-                  value={formData.radioIdCode}
-                  onChange={(e) => setFormData(prev => ({ ...prev, radioIdCode: e.target.value }))}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-slate-900 text-sm focus:border-blue-500 font-mono"
+                  name="radioAssignedTo"
+                  placeholder="ej: Supervision Mojon o Juan Perez"
+                  value={formData.radioAssignedTo}
+                  onChange={(e) => setFormData(prev => ({ ...prev, radioAssignedTo: e.target.value }))}
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-slate-900 text-sm focus:border-blue-500 font-bold"
                 />
               </div>
             </div>

@@ -145,6 +145,7 @@ model RadioReport {
   type            String   // "failure" (Falla), "maintenance" (Mantenimiento), "request_new" (Solicitud)
   radioSerial     String?  // Relacionado opcionalmente a un radio
   radioIdCode     String?
+  radioAssignedTo String?  // Equipo/Usuario asignado al radio
   reporterName    String   // Quien reporta
   reporterPosition String?
   description     String   // Detalles de la falla o solicitud
