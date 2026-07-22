@@ -99,7 +99,7 @@ export default function PublicRadioSupport() {
             <img src="/logo.jpg" alt="Logo Equinox Gold" className="h-10 object-contain rounded bg-white p-1" />
             <div>
               <h1 className="text-md font-bold text-slate-900 leading-tight">Centro de Soporte y Búsqueda de Radios</h1>
-              <p className="text-xs text-slate-500 font-medium">Mina La Libertad | El Limón | Bonanza</p>
+              <p className="text-xs text-slate-500 font-medium">Mina La Libertad | El Limón | EBM</p>
             </div>
           </div>
           <Link

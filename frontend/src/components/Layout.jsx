@@ -52,6 +52,12 @@ export default function Layout({ children }){
 
         {/* Navigation links */}
         <nav className="space-y-1.5">
+          {/* Group: Usuarios Desminic */}
+          {(hasPermission('dashboard') || hasPermission('forms') || hasPermission('checklists') || hasPermission('food') || hasPermission('rooms') || hasPermission('crimea')) && (
+            <div className="pt-2 pb-1">
+              <span className="px-4 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Usuarios Desminic</span>
+            </div>
+          )}
           {hasPermission('dashboard') && (
             <Link className={linkClass('/')} to="/" onClick={closeMobileMenu}>
               📊 Dashboard
@@ -72,11 +78,6 @@ export default function Layout({ children }){
               🍽️ Menú Semanal
             </Link>
           )}
-          {hasPermission('radios') && (
-            <Link className={linkClass('/radios')} to={user?.role === 'admin' ? "/radios/itadmon" : "/radios/soporte"} onClick={closeMobileMenu}>
-              📻 Inventario Radios
-            </Link>
-          )}
           {hasPermission('rooms') && (
             <Link className={linkClass('/salas')} to="/salas" onClick={closeMobileMenu}>
               📅 Salas de Reunión
@@ -86,6 +87,18 @@ export default function Layout({ children }){
             <Link className={linkClass('/crimea/muestras')} to="/crimea/muestras" onClick={closeMobileMenu}>
               💧 Muestras Crimea
             </Link>
+          )}
+          
+          {/* Group: Servicios de IT */}
+          {hasPermission('radios') && (
+            <>
+              <div className="pt-4 pb-1">
+                <span className="px-4 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Servicios de IT</span>
+              </div>
+              <Link className={linkClass('/radios')} to={user?.role === 'admin' ? "/radios/itadmon" : "/radios/soporte"} onClick={closeMobileMenu}>
+                📻 Inventario Radios
+              </Link>
+            </>
           )}
           
           {user?.role === 'admin' && (hasPermission('lodging') || hasPermission('vehicles')) && (
