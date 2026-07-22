@@ -141,28 +141,28 @@ export default function PublicRadioSupport() {
               <table className="w-full text-left text-xs border-collapse min-w-[600px]">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-200 text-[10px] font-bold text-slate-500 uppercase">
+                    <th className="px-4 py-3 text-center">Acción</th>
                     <th className="px-4 py-3">Serie</th>
                     <th className="px-4 py-3">ID Radio</th>
                     <th className="px-4 py-3">Usuario</th>
                     <th className="px-4 py-3">Sitio / Mina</th>
-                    <th className="px-4 py-3 text-center">Acción</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
                   {searchResults.map((radio) => (
                     <tr key={radio.id} className="hover:bg-slate-50/50 transition">
-                      <td className="px-4 py-3 font-mono">{radio.serial}</td>
-                      <td className="px-4 py-3 font-semibold">{radio.radioIdCode || '-'}</td>
-                      <td className="px-4 py-3 text-slate-900">{radio.assignedTo || 'Sin asignar'}</td>
-                      <td className="px-4 py-3">{radio.site}</td>
                       <td className="px-4 py-3 text-center">
                         <button
                           onClick={() => selectRadioFromSearch(radio)}
-                          className="bg-blue-50 hover:bg-blue-100 text-blue-600 font-bold px-2.5 py-1.5 rounded-lg border border-blue-100/50 transition"
+                          className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-2.5 py-1.5 rounded-lg shadow-sm transition"
                         >
                           Reportar
                         </button>
                       </td>
+                      <td className="px-4 py-3 font-mono">{radio.serial}</td>
+                      <td className="px-4 py-3 font-semibold">{radio.radioIdCode || '-'}</td>
+                      <td className="px-4 py-3 text-slate-900">{radio.assignedTo || 'Sin asignar'}</td>
+                      <td className="px-4 py-3">{radio.site}</td>
                     </tr>
                   ))}
                 </tbody>

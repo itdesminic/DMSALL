@@ -52,7 +52,7 @@ export async function login(req, res) {
     const token = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, { expiresIn: '8h' });
     return res.json({
       token,
-      user: { id: user.id, email: user.email, name: user.name, role: user.role },
+      user: { id: user.id, email: user.email, name: user.name, role: user.role, site: user.site, permissions: user.permissions },
     });
   } catch (err) {
     console.error(err);
@@ -61,15 +61,15 @@ export async function login(req, res) {
 }
 
 export async function register(req, res) {
-  const { name, email, password, role } = req.body;
+  const { name, email, password, role, site, permissions } = req.body;
   if (!email || !password) return res.status(400).json({ error: 'Email y contraseña son requeridos' });
   try {
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) return res.status(409).json({ error: 'El usuario ya existe' });
     const hashed = await bcrypt.hash(password, 10);
-    const user = await prisma.user.create({ data: { name, email, password: hashed, role: role || 'user' } });
+    const user = await prisma.user.create({ data: { name, email, password: hashed, role: role || 'user', site: site || null, permissions: permissions || null } });
     const token = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, { expiresIn: '8h' });
-    res.status(201).json({ token, user: { id: user.id, email: user.email, name: user.name, role: user.role } });
+    res.status(201).json({ token, user: { id: user.id, email: user.email, name: user.name, role: user.role, site: user.site, permissions: user.permissions } });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Error del servidor' });
