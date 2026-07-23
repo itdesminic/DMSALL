@@ -209,25 +209,29 @@ export default function PublicRadioSupport() {
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Serie (Opcional) */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5">Serie del Radio (Opcional)</label>
-                <input
-                  type="text"
-                  name="radioSerial"
-                  placeholder="ej: 278EBJ1553"
-                  value={formData.radioSerial}
-                  onChange={(e) => setFormData(prev => ({ ...prev, radioSerial: e.target.value }))}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-slate-900 text-sm focus:border-blue-500 font-mono"
-                />
-              </div>
+              {reportType !== 'request_new' && (
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5">Serie del Radio (Opcional)</label>
+                  <input
+                    type="text"
+                    name="radioSerial"
+                    placeholder="ej: 278EBJ1553"
+                    value={formData.radioSerial}
+                    onChange={(e) => setFormData(prev => ({ ...prev, radioSerial: e.target.value }))}
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-slate-900 text-sm focus:border-blue-500 font-mono"
+                  />
+                </div>
+              )}
 
               {/* Usuario o Equipo Asignado */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5">Usuario o Equipo Asignado Actual</label>
+              <div className={reportType === 'request_new' ? 'col-span-2' : ''}>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5">
+                  {reportType === 'request_new' ? 'Usuario o Equipo a Asignar' : 'Usuario o Equipo Asignado Actual'}
+                </label>
                 <input
                   type="text"
                   name="radioAssignedTo"
-                  placeholder="ej: Supervision Mojon o Juan Perez"
+                  placeholder={reportType === 'request_new' ? "ej: Operaciones Mina" : "ej: Supervision Mojon o Juan Perez"}
                   value={formData.radioAssignedTo}
                   onChange={(e) => setFormData(prev => ({ ...prev, radioAssignedTo: e.target.value }))}
                   className="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-slate-900 text-sm focus:border-blue-500 font-bold"

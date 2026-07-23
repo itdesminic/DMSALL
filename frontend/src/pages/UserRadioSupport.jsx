@@ -185,22 +185,26 @@ export default function UserRadioSupport() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5">Serie del Radio (Opcional)</label>
-            <input
-              type="text"
-              placeholder="ej: SN100293"
-              value={formData.radioSerial}
-              onChange={(e) => setFormData(prev => ({ ...prev, radioSerial: e.target.value }))}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-sm focus:border-blue-500 font-mono"
-            />
-          </div>
+          {reportType !== 'request_new' && (
+            <div>
+              <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5">Serie del Radio (Opcional)</label>
+              <input
+                type="text"
+                placeholder="ej: SN100293"
+                value={formData.radioSerial}
+                onChange={(e) => setFormData(prev => ({ ...prev, radioSerial: e.target.value }))}
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-sm focus:border-blue-500 font-mono"
+              />
+            </div>
+          )}
 
-          <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5">Usuario o Equipo Asignado Actual</label>
+          <div className={reportType === 'request_new' ? 'col-span-2' : ''}>
+            <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5">
+              {reportType === 'request_new' ? 'Usuario o Equipo a Asignar' : 'Usuario o Equipo Asignado Actual'}
+            </label>
             <input
               type="text"
-              placeholder="ej: Supervision Mojon"
+              placeholder={reportType === 'request_new' ? "ej: Operaciones Mina" : "ej: Supervision Mojon"}
               value={formData.radioAssignedTo}
               onChange={(e) => setFormData(prev => ({ ...prev, radioAssignedTo: e.target.value }))}
               className="w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-sm focus:border-blue-500 font-bold"
