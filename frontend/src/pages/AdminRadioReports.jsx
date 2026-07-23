@@ -45,6 +45,8 @@ export default function AdminRadioReports() {
         return <span className="bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded text-[10px] font-bold uppercase">🛑 Falla Técnica</span>
       case 'maintenance':
         return <span className="bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded text-[10px] font-bold uppercase">🔧 Mantenimiento</span>
+      case 'change_assignment':
+        return <span className="bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded text-[10px] font-bold uppercase">🔄 Reasignación</span>
       case 'request_new':
         return <span className="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded text-[10px] font-bold uppercase">➕ Asignación Nuevo</span>
       default:
@@ -124,7 +126,14 @@ export default function AdminRadioReports() {
                         <span className="font-bold text-slate-900 block">{report.reporterName}</span>
                         <span className="text-[10px] text-slate-400 font-normal">{report.reporterPosition || 'Sin puesto'}</span>
                       </td>
-                      <td className="px-5 py-4 text-slate-600 leading-relaxed break-words">{report.description}</td>
+                      <td className="px-5 py-4 text-slate-600 leading-relaxed break-words">
+                        {report.newAssignee && (
+                          <div className="mb-1.5 text-blue-700 bg-blue-50 px-2.5 py-1 rounded text-[10px] font-bold border border-blue-200 inline-block">
+                            Reasignar a: <span className="text-blue-900 font-extrabold">{report.newAssignee}</span>
+                          </div>
+                        )}
+                        <p>{report.description}</p>
+                      </td>
                       <td className="px-5 py-4 text-center whitespace-nowrap">
                         <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider ${
                           report.status === 'resolved'

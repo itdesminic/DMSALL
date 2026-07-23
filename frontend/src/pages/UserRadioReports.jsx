@@ -27,6 +27,8 @@ export default function UserRadioReports() {
         return <span className="bg-rose-50 text-rose-700 px-2 py-0.5 rounded text-[10px] font-bold border border-rose-200">Falla Técnica</span>
       case 'maintenance':
         return <span className="bg-amber-50 text-amber-700 px-2 py-0.5 rounded text-[10px] font-bold border border-amber-200">Mantenimiento</span>
+      case 'change_assignment':
+        return <span className="bg-purple-50 text-purple-700 px-2 py-0.5 rounded text-[10px] font-bold border border-purple-200">🔄 Reasignación</span>
       case 'request_new':
         return <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded text-[10px] font-bold border border-blue-200">Solicitud Equipo</span>
       default:
@@ -95,7 +97,12 @@ export default function UserRadioReports() {
                         {report.radioSerial || <span className="text-slate-400 font-normal">Sin serie</span>}
                       </td>
                       <td className="px-5 py-4 text-slate-600 leading-relaxed break-words text-xs">
-                        {report.description}
+                        {report.newAssignee && (
+                          <div className="mb-1 text-blue-700 bg-blue-50 px-2 py-0.5 rounded text-[10px] font-bold border border-blue-200 inline-block">
+                            Cambio de asignado a: {report.newAssignee}
+                          </div>
+                        )}
+                        <p className="mt-1">{report.description}</p>
                       </td>
                       <td className="px-5 py-4 text-slate-800 text-xs">{report.site}</td>
                       <td className="px-5 py-4 whitespace-nowrap">{getStatusBadge(report.status)}</td>

@@ -120,7 +120,7 @@ export default function Layout({ children }){
             </>
           )}
           
-          {user?.role === 'admin' && (hasPermission('lodging') || hasPermission('vehicles')) && (
+          {user?.role === 'admin' && (hasPermission('lodging') || hasPermission('vehicles') || hasPermission('food')) && (
             <div className="pt-4 pb-1">
               <span className="px-4 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Servicios Generales</span>
             </div>
@@ -129,6 +129,11 @@ export default function Layout({ children }){
           {user?.role === 'admin' && hasPermission('lodging') && (
             <Link className={linkClass('/admin/hospedaje')} to="/admin/hospedaje" onClick={closeMobileMenu}>
               🏨 Hospedaje y Comida
+            </Link>
+          )}
+          {user?.role === 'admin' && hasPermission('food') && (
+            <Link className={linkClass('/admin/comida')} to="/admin/comida" onClick={closeMobileMenu}>
+              🍲 Gestionar Menú
             </Link>
           )}
           {user?.role === 'admin' && hasPermission('vehicles') && (

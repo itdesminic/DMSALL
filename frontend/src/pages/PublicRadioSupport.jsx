@@ -8,11 +8,12 @@ export default function PublicRadioSupport() {
   const [searching, setSearching] = useState(false)
   
   // Ticket / Report Form State
-  const [reportType, setReportType] = useState('failure') // 'failure', 'maintenance', 'request_new'
+  const [reportType, setReportType] = useState('failure') // 'failure', 'maintenance', 'request_new', 'change_assignment'
   const [formData, setFormData] = useState({
     radioSerial: '',
     radioIdCode: '',
     radioAssignedTo: '',
+    newAssignee: '',
     reporterName: '',
     reporterPosition: '',
     description: '',
@@ -50,6 +51,7 @@ export default function PublicRadioSupport() {
       radioSerial: radio.serial || '',
       radioIdCode: radio.radioIdCode || '',
       radioAssignedTo: radio.assignedTo || '',
+      newAssignee: '',
       site: radio.site || 'La Libertad'
     }))
     // Scroll smoothly to report form
@@ -74,6 +76,7 @@ export default function PublicRadioSupport() {
         radioSerial: '',
         radioIdCode: '',
         radioAssignedTo: '',
+        newAssignee: '',
         reporterName: '',
         reporterPosition: '',
         description: '',
@@ -180,17 +183,18 @@ export default function PublicRadioSupport() {
           </div>
 
           {/* Selector de tipo */}
-          <div className="flex gap-2 p-1 rounded-xl bg-slate-100 border border-slate-200">
+          <div className="flex flex-wrap gap-2 p-1 rounded-xl bg-slate-100 border border-slate-200">
             {[
               { id: 'failure', label: '🛑 Notificar Falla' },
               { id: 'maintenance', label: '🔧 Mantenimiento' },
+              { id: 'change_assignment', label: '🔄 Cambio de Asignación' },
               { id: 'request_new', label: '➕ Solicitar Radio' }
             ].map(type => (
               <button
                 key={type.id}
                 type="button"
                 onClick={() => setReportType(type.id)}
-                className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
+                className={`flex-1 min-w-[120px] py-2 text-xs font-bold rounded-lg transition-all ${
                   reportType === type.id
                     ? 'bg-white text-slate-900 shadow-sm'
                     : 'text-slate-500 hover:text-slate-800'
@@ -219,7 +223,7 @@ export default function PublicRadioSupport() {
 
               {/* Usuario o Equipo Asignado */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5">Usuario o Equipo Asignado</label>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5">Usuario o Equipo Asignado Actual</label>
                 <input
                   type="text"
                   name="radioAssignedTo"
@@ -230,6 +234,20 @@ export default function PublicRadioSupport() {
                 />
               </div>
             </div>
+
+            {reportType === 'change_assignment' && (
+              <div className="bg-blue-50/50 p-4 border border-blue-100 rounded-xl">
+                <label className="block text-xs font-bold text-blue-800 uppercase mb-1.5">Nuevo Personal que Usará el Equipo</label>
+                <input
+                  type="text"
+                  placeholder="Escribe el nombre del nuevo personal (ej: Juan Perez o Planta IT)"
+                  value={formData.newAssignee}
+                  onChange={(e) => setFormData(prev => ({ ...prev, newAssignee: e.target.value }))}
+                  className="w-full rounded-xl border border-blue-200 bg-white p-3 text-slate-900 text-sm focus:border-blue-500 font-bold text-blue-700 placeholder-blue-300"
+                  required
+                />
+              </div>
+            )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Reporter Name */}

@@ -25,6 +25,7 @@ import AdminUserManagement from './pages/AdminUserManagement'
 import UserRadioSupport from './pages/UserRadioSupport'
 import UserRadioReports from './pages/UserRadioReports'
 import Welcome from './pages/Welcome'
+import AdminFoodMenu from './pages/AdminFoodMenu'
 
 function FormsRoute() {
   const { user, loading } = useAuth()
@@ -228,6 +229,7 @@ export default function App(){
       <Route path="/salas" element={<Layout><ProtectedRoute requiredPermission="rooms"><Rooms/></ProtectedRoute></Layout>} />
       <Route path="/servicios/hospedaje/solicitud" element={<PublicLodgingRequest />} />
       <Route path="/admin/hospedaje" element={<Layout><ProtectedRoute allowedRoles={['admin']} requiredPermission="lodging"><AdminLodgingManagement/></ProtectedRoute></Layout>} />
+      <Route path="/admin/comida" element={<Layout><ProtectedRoute allowedRoles={['admin']} requiredPermission="food"><AdminFoodMenu/></ProtectedRoute></Layout>} />
       <Route path="/admin" element={<Layout><ProtectedRoute allowedRoles={['admin']} requiredPermission="vehicles"><Admin/></ProtectedRoute></Layout>} />
       <Route path="/configuracion/usuarios" element={<Layout><ProtectedRoute allowedRoles={['admin']} requiredPermission="users"><AdminUserManagement/></ProtectedRoute></Layout>} />
       <Route path="*" element={<Navigate replace to="/" />} />

@@ -2,8 +2,28 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export async function listMenus(req, res) {
-  const menus = await prisma.foodMenu.findMany({ include: { foodMenuItems: true } });
-  res.json(menus);
+  try {
+    const menus = await prisma.foodMenu.findMany({
+      include: {
+        foodMenuItems: {
+          include: {
+            foodConfirmations: {
+              include: {
+                user: {
+                  select: { id: true, name: true, email: true }
+                }
+              }
+            }
+          }
+        }
+      },
+      orderBy: { weekStart: 'desc' }
+    });
+    res.json(menus);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al listar menús' });
+  }
 }
 
 export async function createMenu(req, res) {
@@ -15,7 +35,13 @@ export async function createMenu(req, res) {
         published: published ?? false,
         foodMenuItems: { create: items ?? [] }
       },
-      include: { foodMenuItems: true }
+      include: {
+        foodMenuItems: {
+          include: {
+            foodConfirmations: true
+          }
+        }
+      }
     });
     res.json(menu);
   } catch (err) {

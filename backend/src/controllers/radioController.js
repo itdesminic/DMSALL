@@ -249,7 +249,7 @@ export async function bulkUpload(req, res) {
 
 // 6. Submit Support Report (Public / User)
 export async function submitReport(req, res) {
-  const { type, radioSerial, radioIdCode, radioAssignedTo, reporterName, reporterPosition, description, site, isOperational } = req.body;
+  const { type, radioSerial, radioIdCode, radioAssignedTo, newAssignee, reporterName, reporterPosition, description, site, isOperational } = req.body;
   const reporterEmail = req.user ? req.user.email : (req.body.reporterEmail || null);
 
   if (!type || !reporterName || !description || !site) {
@@ -263,6 +263,7 @@ export async function submitReport(req, res) {
         radioSerial: radioSerial || null,
         radioIdCode: radioIdCode ? radioIdCode.toString() : null,
         radioAssignedTo: radioAssignedTo || null,
+        newAssignee: newAssignee || null,
         reporterName,
         reporterEmail: reporterEmail || null,
         reporterPosition: reporterPosition || null,
@@ -289,6 +290,51 @@ export async function submitReport(req, res) {
           data: { status: newStatus }
         });
       }
+    }
+
+    // Send IT email notification
+    try {
+      const admins = await prisma.user.findMany({
+        where: {
+          role: 'admin',
+          OR: [
+            { site },
+            { site: 'Todos' }
+          ]
+        }
+      });
+      const adminEmails = admins.map(admin => admin.email).filter(Boolean);
+
+      if (adminEmails.length > 0) {
+        const { sendMail } = await import('../utils/emailService.js');
+        let reportTypeText = '';
+        if (type === 'failure') reportTypeText = '🛑 Falla Técnica';
+        else if (type === 'maintenance') reportTypeText = '🔧 Mantenimiento';
+        else if (type === 'request_new') reportTypeText = '➕ Solicitud de Radio Nuevo';
+        else if (type === 'change_assignment') reportTypeText = '🔄 Cambio de Asignación';
+
+        await sendMail({
+          to: adminEmails.join(','),
+          subject: `[CRM Radios] Nuevo ticket registrado en ${site} - ${reportTypeText}`,
+          html: `
+            <div style="font-family: sans-serif; color: #333; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+              <h2 style="color: #2563eb; border-bottom: 2px solid #2563eb; padding-bottom: 8px;">Nuevo Ticket de Soporte de Radio</h2>
+              <p>Se ha registrado un nuevo ticket en la plataforma:</p>
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr style="background-color: #f9fafb;"><td style="padding: 8px; font-weight: bold; width: 180px;">Tipo de Reporte:</td><td style="padding: 8px;">${reportTypeText}</td></tr>
+                <tr><td style="padding: 8px; font-weight: bold;">Sitio/Mina:</td><td style="padding: 8px;">${site}</td></tr>
+                <tr style="background-color: #f9fafb;"><td style="padding: 8px; font-weight: bold;">Reportado Por:</td><td style="padding: 8px;">${reporterName} (${reporterPosition || 'Sin puesto'})</td></tr>
+                <tr><td style="padding: 8px; font-weight: bold;">Serie del Radio:</td><td style="padding: 8px; font-weight: md; font-family: monospace;">${radioSerial || 'No especificado'}</td></tr>
+                ${newAssignee ? `<tr style="background-color: #eff6ff;"><td style="padding: 8px; font-weight: bold; color: #1e40af;">Nuevo Asignado:</td><td style="padding: 8px; font-weight: bold; color: #1e40af;">${newAssignee}</td></tr>` : ''}
+                <tr style="background-color: #f9fafb;"><td style="padding: 8px; font-weight: bold; vertical-align: top;">Descripción:</td><td style="padding: 8px;">${description}</td></tr>
+              </table>
+              <p style="margin-top: 20px; font-size: 11px; color: #666;">Este correo fue generado de forma automática por el sistema de control de radios de Desminic LL.</p>
+            </div>
+          `
+        });
+      }
+    } catch (mailErr) {
+      console.error('Error al enviar correo de notificación a IT:', mailErr);
     }
 
     res.status(201).json(report);
@@ -351,15 +397,21 @@ export async function updateReportStatus(req, res) {
       });
       if (radio) {
         let newRadioStatus = radio.status;
+        let updateData = {};
+
         if (status === 'in_progress') {
           newRadioStatus = 'mantenimiento';
         } else if (status === 'resolved') {
           newRadioStatus = 'bueno';
+          if (report.type === 'change_assignment' && report.newAssignee) {
+            updateData.assignedTo = report.newAssignee;
+          }
         }
+        updateData.status = newRadioStatus;
 
         await prisma.radio.update({
           where: { id: radio.id },
-          data: { status: newRadioStatus }
+          data: updateData
         });
       }
     }

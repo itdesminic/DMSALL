@@ -143,10 +143,11 @@ model RadioMovement {
 
 model RadioReport {
   id              Int      @id @default(autoincrement())
-  type            String   // "failure" (Falla), "maintenance" (Mantenimiento), "request_new" (Solicitud)
+  type            String   // "failure" (Falla), "maintenance" (Mantenimiento), "request_new" (Solicitud), "change_assignment" (Cambio Asignación)
   radioSerial     String?  // Relacionado opcionalmente a un radio
   radioIdCode     String?
   radioAssignedTo String?  // Equipo/Usuario asignado al radio
+  newAssignee     String?  // Nuevo personal asignado (para Cambio Asignación)
   reporterName    String   // Quien reporta
   reporterEmail   String?  // Correo del reportero para seguimiento del usuario
   reporterPosition String?
