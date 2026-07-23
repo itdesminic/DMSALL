@@ -7,13 +7,16 @@ export default function AdminFoodMenu() {
   const [weekStart, setWeekStart] = useState('')
   const [published, setPublished] = useState(false)
   
+  // Tab control: 'design' or 'history'
+  const [activePanelTab, setActivePanelTab] = useState('design')
+
   // 7 days of the week definition
   const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
   const mealTimes = ['Desayuno', 'Almuerzo', 'Cena']
   
   // State for the 21 pre-rendered slots (7 days * 3 times)
   const [weeklySlots, setWeeklySlots] = useState([])
-  const [activeTab, setActiveTab] = useState(0) // 0 = Lunes, 6 = Domingo
+  const [activeDayTab, setActiveDayTab] = useState(0) // 0 = Lunes, 6 = Domingo
 
   // Modal / Report State
   const [showReportMenu, setShowReportMenu] = useState(null)
@@ -51,7 +54,7 @@ export default function AdminFoodMenu() {
       })
     }
     setWeeklySlots(slots)
-    setActiveTab(0) // Reset to Lunes tab
+    setActiveDayTab(0) // Reset to Lunes tab
   }, [weekStart])
 
   const fetchMenus = async () => {
@@ -116,6 +119,7 @@ export default function AdminFoodMenu() {
       setPublished(false)
       setWeeklySlots([])
       fetchMenus()
+      setActivePanelTab('history') // Redirect to list to see the menu
     } catch (err) {
       console.error(err)
       alert('Error al guardar el menú semanal.')
@@ -128,42 +132,65 @@ export default function AdminFoodMenu() {
   }
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto px-4 py-2">
+    <div className="space-y-6 max-w-7xl mx-auto px-4 py-2">
       {/* Header */}
       <div className="border-b border-slate-200 pb-4">
-        <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Gestión del Menú Alimenticio</h1>
-        <p className="text-sm text-slate-500 mt-1">Programa el menú semanal completo de forma fácil e intuitiva.</p>
+        <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight font-display">Gestión del Menú Alimenticio</h1>
+        <p className="text-sm text-slate-500 mt-1">Administra la planificación semanal de comidas y las confirmaciones de asistencia.</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* Form: Create Menu */}
-        <div className="lg:col-span-1 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-6">
+      {/* Main Panel Navigation Tabs */}
+      <div className="flex border-b border-slate-200 gap-6">
+        <button
+          onClick={() => setActivePanelTab('design')}
+          className={`pb-3 text-sm font-bold border-b-2 transition-all ${
+            activePanelTab === 'design'
+              ? 'border-blue-600 text-blue-600'
+              : 'border-transparent text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          🍲 Programar Menú Semanal
+        </button>
+        <button
+          onClick={() => setActivePanelTab('history')}
+          className={`pb-3 text-sm font-bold border-b-2 transition-all ${
+            activePanelTab === 'history'
+              ? 'border-blue-600 text-blue-600'
+              : 'border-transparent text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          📋 Historial de Menús Registrados
+        </button>
+      </div>
+
+      {/* Panel 1: Design Menu */}
+      {activePanelTab === 'design' && (
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm space-y-6 animate-in fade-in duration-200">
           <div>
-            <h2 className="text-md font-bold text-slate-900">🗓️ Diseñar Menú de la Semana</h2>
+            <h2 className="text-lg font-bold text-slate-900">🗓️ Diseñar Menú de la Semana</h2>
             <p className="text-xs text-slate-500">Selecciona el inicio de semana y rellena los tiempos de comida correspondientes.</p>
           </div>
 
           <form onSubmit={handleCreateMenu} className="space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl bg-slate-50/50 p-4 border border-slate-200/50 rounded-xl">
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5">Inicio de la Semana (Lunes)</label>
+                <label className="block text-xs font-extrabold text-slate-700 uppercase mb-1.5">Inicio de la Semana (Lunes)</label>
                 <input
                   type="date"
                   value={weekStart}
                   onChange={(e) => setWeekStart(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-sm focus:border-blue-500 font-bold"
+                  className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-sm focus:border-blue-500 font-bold"
                   required
                 />
               </div>
 
               <div className="flex items-center">
-                <label className="flex items-center gap-2 text-xs font-bold text-slate-700 uppercase cursor-pointer py-1 mt-4">
+                <label className="flex items-center gap-2.5 text-xs font-bold text-slate-700 uppercase cursor-pointer py-1 mt-4">
                   <input
                     type="checkbox"
                     checked={published}
                     onChange={(e) => setPublished(e.target.checked)}
-                    className="rounded text-blue-600 focus:ring-blue-500 w-4 h-4"
+                    className="rounded text-blue-600 focus:ring-blue-500 w-4 h-4 border-slate-300"
                   />
                   Publicar inmediatamente para comensales
                 </label>
@@ -172,29 +199,28 @@ export default function AdminFoodMenu() {
 
             {/* Weekly slots rendering */}
             {weeklySlots.length > 0 ? (
-              <div className="space-y-4 border-t border-slate-100 pt-4">
+              <div className="space-y-5 border-t border-slate-100 pt-5">
                 
                 {/* Day Navigation Tabs */}
-                <div className="flex flex-wrap gap-1 bg-slate-100 p-1 rounded-xl">
+                <div className="flex flex-wrap gap-1 bg-slate-100 p-1.5 rounded-2xl">
                   {daysOfWeek.map((day, idx) => {
-                    // Check if this day has any filled dishes
                     const hasData = weeklySlots.some(s => s.dayIndex === idx && s.main.trim() !== '')
                     return (
                       <button
                         key={day}
                         type="button"
-                        onClick={() => setActiveTab(idx)}
-                        className={`flex-1 min-w-[80px] py-2 text-xs font-bold rounded-lg transition-all relative ${
-                          activeTab === idx
+                        onClick={() => setActiveDayTab(idx)}
+                        className={`flex-1 min-w-[90px] py-2.5 text-xs font-extrabold rounded-xl transition-all relative ${
+                          activeDayTab === idx
                             ? 'bg-white text-slate-900 shadow-sm'
                             : 'text-slate-500 hover:text-slate-800'
                         }`}
                       >
                         {day}
                         {hasData && (
-                          <span className="absolute -top-1 -right-1 flex h-2 w-2">
+                          <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                           </span>
                         )}
                       </button>
@@ -202,37 +228,37 @@ export default function AdminFoodMenu() {
                   })}
                 </div>
 
-                {/* active tab content */}
-                <div className="space-y-4 bg-slate-50/50 p-5 rounded-2xl border border-slate-100 animate-in fade-in duration-200">
-                  <div className="border-b border-slate-200 pb-2 mb-4">
-                    <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wide">
-                      Menú para el día {daysOfWeek[activeTab]} ({
-                        new Date(new Date(weekStart + 'T00:00:00').getTime() + activeTab * 24 * 60 * 60 * 1000).toLocaleDateString('es-ES', { dateStyle: 'medium' })
+                {/* Day tab content */}
+                <div className="space-y-4 bg-slate-50/50 p-6 rounded-2xl border border-slate-200 animate-in fade-in duration-200">
+                  <div className="border-b border-slate-200 pb-3 mb-4">
+                    <h3 className="text-sm font-extrabold text-slate-800 uppercase tracking-wide">
+                      Menú para el día {daysOfWeek[activeDayTab]} ({
+                        new Date(new Date(weekStart + 'T00:00:00').getTime() + activeDayTab * 24 * 60 * 60 * 1000).toLocaleDateString('es-ES', { dateStyle: 'long' })
                       })
                     </h3>
-                    <p className="text-[10px] text-slate-400 font-semibold mt-0.5">Rellena los tiempos que requieras. Deja el campo vacío si no hay servicio.</p>
+                    <p className="text-[10px] text-slate-400 font-semibold mt-0.5">Rellena los tiempos de comida que requieras. Deja el cuadro vacío si no hay servicio ese día.</p>
                   </div>
 
-                  <div className="grid grid-cols-1 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {mealTimes.map(time => {
-                      const slot = weeklySlots.find(s => s.dayIndex === activeTab && s.mealTime === time)
+                      const slot = weeklySlots.find(s => s.dayIndex === activeDayTab && s.mealTime === time)
                       if (!slot) return null
 
                       return (
-                        <div key={time} className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm space-y-3">
-                          <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-slate-100 text-slate-700">
+                        <div key={time} className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
+                          <span className="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded bg-slate-100 text-slate-700">
                             {time === 'Desayuno' ? '🍳 Desayuno' : time === 'Almuerzo' ? '🍲 Almuerzo' : '🌙 Cena'}
                           </span>
 
                           <div className="space-y-2">
                             <div>
-                              <label className="block text-[9px] font-bold text-slate-500 uppercase mb-1">Menú / Opciones de Comida</label>
+                              <label className="block text-[10px] font-extrabold text-slate-400 uppercase mb-1.5">Opciones del Menú</label>
                               <textarea
                                 placeholder="ej: Opción 1: Pollo frito. Opción 2: Carne asada. Refresco: Cacao..."
-                                rows="3"
+                                rows="6"
                                 value={slot.main}
-                                onChange={(e) => handleSlotChange(activeTab, time, 'main', e.target.value)}
-                                className="w-full rounded-lg border border-slate-250 p-2 text-xs focus:border-blue-500 font-semibold"
+                                onChange={(e) => handleSlotChange(activeDayTab, time, 'main', e.target.value)}
+                                className="w-full rounded-xl border border-slate-250 p-3 text-xs focus:border-blue-500 font-bold bg-slate-50 focus:bg-white leading-relaxed transition"
                               />
                             </div>
                           </div>
@@ -244,82 +270,92 @@ export default function AdminFoodMenu() {
 
                 <button
                   type="submit"
-                  className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold p-3 text-xs shadow-sm transition"
+                  className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold p-3.5 text-xs shadow-sm transition"
                 >
                   Guardar Menú Semanal Completo
                 </button>
               </div>
             ) : (
-              <div className="border-2 border-dashed border-slate-200 rounded-2xl p-12 text-center text-slate-400 font-medium text-xs">
+              <div className="border-2 border-dashed border-slate-200 rounded-2xl p-16 text-center text-slate-400 font-semibold text-xs bg-slate-50/50">
                 Selecciona la fecha de inicio de semana arriba para generar la plantilla de los 7 días.
               </div>
             )}
           </form>
         </div>
+      )}
 
-        {/* List: Past Menus */}
-        <div className="lg:col-span-1 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4 max-h-[75vh] overflow-y-auto">
+      {/* Panel 2: Past/Registered Menus */}
+      {activePanelTab === 'history' && (
+        <div className="space-y-6 animate-in fade-in duration-200">
           <div>
-            <h2 className="text-md font-bold text-slate-900">📋 Menús Registrados</h2>
-            <p className="text-xs text-slate-500">Programaciones semanales de comida.</p>
+            <h2 className="text-lg font-bold text-slate-900">📋 Menús Programados Registrados</h2>
+            <p className="text-xs text-slate-500">Historial completo de planificaciones semanales de comida y asistencias.</p>
           </div>
 
           {loading ? (
-            <div className="py-10 text-center text-slate-400 animate-pulse">Cargando menús...</div>
+            <div className="py-20 text-center text-slate-400 animate-pulse font-bold text-sm">Cargando menús...</div>
           ) : (
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {menus.map((menu) => (
-                <div key={menu.id} className="border border-slate-200 rounded-xl p-4 space-y-3 hover:border-slate-350 transition bg-slate-50/10">
-                  <div className="flex justify-between items-center border-b border-slate-100 pb-2 flex-wrap gap-2">
+                <div key={menu.id} className="border border-slate-200 bg-white rounded-2xl p-5 space-y-4 hover:shadow-md hover:border-slate-350 transition flex flex-col justify-between">
+                  
+                  {/* Card Header */}
+                  <div className="flex justify-between items-center border-b border-slate-100 pb-3 flex-wrap gap-2">
                     <div>
-                      <span className="text-[9px] font-bold text-slate-400">Semana del</span>
-                      <h3 className="text-xs font-extrabold text-slate-800">
-                        {new Date(menu.weekStart).toLocaleDateString('es-ES', { dateStyle: 'medium' })}
+                      <span className="text-[10px] font-bold text-slate-400 uppercase">Semana del</span>
+                      <h3 className="text-sm font-extrabold text-slate-850">
+                        {new Date(menu.weekStart + 'T00:00:00').toLocaleDateString('es-ES', { dateStyle: 'medium' })}
                       </h3>
                     </div>
                     <div className="flex gap-1.5 items-center">
                       <button
                         type="button"
                         onClick={() => setShowReportMenu(menu)}
-                        className="bg-blue-600 hover:bg-blue-700 text-white text-[9px] font-extrabold px-2 py-1 rounded shadow-sm transition uppercase"
+                        className="bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-extrabold px-3 py-1.5 rounded-lg shadow-sm transition uppercase"
                       >
                         📊 Reporte
                       </button>
-                      <span className={`px-2 py-0.5 text-[9px] font-extrabold uppercase rounded-full border ${
+                      <span className={`px-2.5 py-1 text-[9px] font-extrabold uppercase rounded-full border ${
                         menu.published
-                          ? 'bg-emerald-50 text-emerald-700 border-emerald-250'
-                          : 'bg-slate-50 text-slate-500 border-slate-250'
+                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                          : 'bg-slate-50 text-slate-500 border-slate-200'
                       }`}>
                         {menu.published ? 'Publicado' : 'Borrador'}
                       </span>
                     </div>
                   </div>
 
-                  {/* List of Dishes (Compact View) */}
-                  <div className="space-y-2">
-                    {menu.foodMenuItems?.map((dish) => (
-                      <div key={dish.id} className="p-2 border border-slate-100 rounded-lg bg-white text-xs">
-                        <div className="flex justify-between items-center text-[9px] text-slate-400 font-bold">
-                          <span>{new Date(dish.date).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric' })}</span>
-                          <span className="bg-slate-100 px-1 rounded">{dish.mealTime}</span>
+                  {/* Card Content: List of Dishes */}
+                  <div className="space-y-3 flex-1 overflow-y-auto max-h-[45vh] pr-1">
+                    {menu.foodMenuItems && [...menu.foodMenuItems]
+                      .sort((a, b) => new Date(a.date) - new Date(b.date) || a.mealTime.localeCompare(b.mealTime))
+                      .map((dish) => (
+                        <div key={dish.id} className="p-3 border border-slate-100 rounded-xl bg-slate-50/40 text-xs">
+                          <div className="flex justify-between items-center text-[9px] text-slate-400 font-bold uppercase">
+                            <span>{new Date(dish.date + 'T00:00:00').toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric' })}</span>
+                            <span className="bg-slate-100 px-1.5 py-0.5 rounded text-slate-600">{dish.mealTime}</span>
+                          </div>
+                          <p className="font-bold text-slate-800 mt-1.5 whitespace-pre-line leading-relaxed">{dish.main}</p>
+                          {dish.foodConfirmations && dish.foodConfirmations.length > 0 && (
+                            <div className="mt-2 text-[9px] text-blue-600 font-extrabold bg-blue-50/50 border border-blue-150 px-2 py-0.5 rounded inline-block">
+                              ✓ {dish.foodConfirmations.length} Confirmados
+                            </div>
+                          )}
                         </div>
-                        <p className="font-bold text-slate-800 mt-1 whitespace-pre-line leading-relaxed truncate">{dish.main}</p>
-                      </div>
                     ))}
                   </div>
                 </div>
               ))}
 
               {menus.length === 0 && (
-                <div className="text-center py-10 text-slate-400 text-xs font-medium">
-                  No hay menús registrados.
+                <div className="col-span-full text-center py-20 text-slate-400 text-xs font-semibold border border-slate-200 bg-white rounded-2xl">
+                  No hay menús registrados en la base de datos.
                 </div>
               )}
             </div>
           )}
         </div>
-
-      </div>
+      )}
 
       {/* Modal: Weekly Attendance Report (Print Friendly) */}
       {showReportMenu && (
@@ -329,7 +365,7 @@ export default function AdminFoodMenu() {
             <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50 print:hidden">
               <div>
                 <h2 className="text-lg font-bold text-slate-950">📊 Reporte de Asistencia al Comedor</h2>
-                <p className="text-xs text-slate-500">Semana del {new Date(showReportMenu.weekStart).toLocaleDateString('es-ES', { dateStyle: 'long' })}</p>
+                <p className="text-xs text-slate-500">Semana del {new Date(showReportMenu.weekStart + 'T00:00:00').toLocaleDateString('es-ES', { dateStyle: 'long' })}</p>
               </div>
               <div className="flex items-center gap-2">
                 <button
@@ -353,7 +389,7 @@ export default function AdminFoodMenu() {
               {/* Document Header for Printing */}
               <div className="hidden print:block text-center space-y-2 border-b border-slate-300 pb-4 mb-4">
                 <h1 className="text-xl font-bold text-slate-900">REPORTE DE ASISTENCIA AL COMEDOR</h1>
-                <p className="text-sm font-bold text-slate-700">Semana del: {new Date(showReportMenu.weekStart).toLocaleDateString('es-ES', { dateStyle: 'long' })}</p>
+                <p className="text-sm font-bold text-slate-700">Semana del: {new Date(showReportMenu.weekStart + 'T00:00:00').toLocaleDateString('es-ES', { dateStyle: 'long' })}</p>
                 <p className="text-xs text-slate-500">Desminic LL — Portal de Servicios Generales</p>
               </div>
 
