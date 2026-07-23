@@ -113,18 +113,8 @@ export default function Food() {
 
                       {/* Plate Card */}
                       <div className="bg-slate-50/50 rounded-xl p-3 border border-slate-100">
-                        <span className="text-[9px] text-slate-400 font-extrabold uppercase block">Plato Fuerte</span>
-                        <p className="font-extrabold text-slate-900 text-sm mt-0.5">{item.main}</p>
-                        {item.sides && (
-                          <p className="text-xs text-slate-500 mt-1 font-medium">
-                            <span className="font-bold text-slate-600">Acompañado de:</span> {item.sides}
-                          </p>
-                        )}
-                        {item.drink && (
-                          <p className="text-xs text-slate-500 mt-0.5 font-medium">
-                            <span className="font-bold text-slate-600">Bebida:</span> {item.drink}
-                          </p>
-                        )}
+                        <span className="text-[9px] text-slate-400 font-extrabold uppercase block mb-1">Opciones y Detalles</span>
+                        <p className="text-slate-850 text-xs font-bold leading-relaxed whitespace-pre-line">{item.main}</p>
                       </div>
                     </div>
 

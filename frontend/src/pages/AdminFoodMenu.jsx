@@ -212,35 +212,13 @@ export default function AdminFoodMenu() {
 
                           <div className="space-y-2">
                             <div>
-                              <label className="block text-[9px] font-bold text-slate-500 uppercase">Plato Principal</label>
-                              <input
-                                type="text"
-                                placeholder="ej: Pollo al horno"
+                              <label className="block text-[9px] font-bold text-slate-500 uppercase mb-1">Menú / Opciones de Comida</label>
+                              <textarea
+                                placeholder="ej: Opción 1: Pollo frito. Opción 2: Carne asada. Refresco: Cacao..."
+                                rows="5"
                                 value={slot.main}
                                 onChange={(e) => handleSlotChange(activeTab, time, 'main', e.target.value)}
                                 className="w-full rounded-lg border border-slate-250 p-2 text-xs focus:border-blue-500 font-semibold"
-                              />
-                            </div>
-
-                            <div>
-                              <label className="block text-[9px] font-bold text-slate-500 uppercase">Acompañamientos</label>
-                              <input
-                                type="text"
-                                placeholder="ej: Arroz, ensalada de repollo"
-                                value={slot.sides}
-                                onChange={(e) => handleSlotChange(activeTab, time, 'sides', e.target.value)}
-                                className="w-full rounded-lg border border-slate-250 p-2 text-xs focus:border-blue-500"
-                              />
-                            </div>
-
-                            <div>
-                              <label className="block text-[9px] font-bold text-slate-500 uppercase">Bebida</label>
-                              <input
-                                type="text"
-                                placeholder="ej: Fresco de Jamaica"
-                                value={slot.drink}
-                                onChange={(e) => handleSlotChange(activeTab, time, 'drink', e.target.value)}
-                                className="w-full rounded-lg border border-slate-250 p-2 text-xs focus:border-blue-500"
                               />
                             </div>
                           </div>
@@ -302,12 +280,7 @@ export default function AdminFoodMenu() {
                           <span>{new Date(dish.date).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric' })}</span>
                           <span className="bg-slate-100 px-1 rounded">{dish.mealTime}</span>
                         </div>
-                        <p className="font-bold text-slate-800 mt-1">{dish.main}</p>
-                        {(dish.sides || dish.drink) && (
-                          <p className="text-[9px] text-slate-500 mt-0.5 truncate">
-                            {dish.sides} {dish.drink ? `· ${dish.drink}` : ''}
-                          </p>
-                        )}
+                        <p className="font-bold text-slate-800 mt-1 whitespace-pre-line leading-relaxed">{dish.main}</p>
                         {dish.foodConfirmations && dish.foodConfirmations.length > 0 ? (
                           <div className="mt-2 pt-1.5 border-t border-slate-100 space-y-1">
                             <span className="text-[9px] font-extrabold text-blue-600 block">
