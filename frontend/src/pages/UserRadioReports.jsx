@@ -102,6 +102,11 @@ export default function UserRadioReports() {
                             Cambio de asignado a: {report.newAssignee}
                           </div>
                         )}
+                        {report.requiredRadioType && (
+                          <div className="mb-1 text-purple-700 bg-purple-50 px-2 py-0.5 rounded text-[10px] font-bold border border-purple-200 inline-block">
+                            Tipo requerido: {report.requiredRadioType}
+                          </div>
+                        )}
                         <p className="mt-1">{report.description}</p>
                       </td>
                       <td className="px-5 py-4 text-slate-800 text-xs">{report.site}</td>

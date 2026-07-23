@@ -11,6 +11,7 @@ export default function UserRadioSupport() {
     radioSerial: '',
     radioAssignedTo: user?.name || '',
     newAssignee: '',
+    requiredRadioType: 'Portátil',
     reporterName: user?.name || '',
     reporterPosition: '',
     description: '',
@@ -51,6 +52,7 @@ export default function UserRadioSupport() {
       radioSerial: radio.serial || '',
       radioAssignedTo: radio.assignedTo || '',
       newAssignee: '',
+      requiredRadioType: 'Portátil',
       site: radio.site || 'La Libertad'
     }))
     setSearchResults([])
@@ -73,6 +75,7 @@ export default function UserRadioSupport() {
         radioSerial: '',
         radioAssignedTo: user?.name || '',
         newAssignee: '',
+        requiredRadioType: 'Portátil',
         reporterName: user?.name || '',
         reporterPosition: '',
         description: '',
@@ -223,6 +226,22 @@ export default function UserRadioSupport() {
               className="w-full rounded-xl border border-blue-200 bg-white p-2.5 text-sm focus:border-blue-500 font-bold text-blue-700 placeholder-blue-300"
               required
             />
+          </div>
+        )}
+
+        {reportType === 'request_new' && (
+          <div className="bg-purple-50/50 p-4 border border-purple-100 rounded-xl">
+            <label className="block text-xs font-bold text-purple-800 uppercase mb-1.5">Tipo de Radio Requerido</label>
+            <select
+              value={formData.requiredRadioType}
+              onChange={(e) => setFormData(prev => ({ ...prev, requiredRadioType: e.target.value }))}
+              className="w-full rounded-xl border border-purple-200 bg-white p-2.5 text-sm focus:border-blue-500 font-bold text-purple-700 bg-white"
+              required
+            >
+              <option value="Portátil">📻 Portátil (Mano)</option>
+              <option value="Base">🏢 Estación Base</option>
+              <option value="Repetidora">📡 Repetidora</option>
+            </select>
           </div>
         )}
 

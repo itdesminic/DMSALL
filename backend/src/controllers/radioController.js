@@ -249,7 +249,7 @@ export async function bulkUpload(req, res) {
 
 // 6. Submit Support Report (Public / User)
 export async function submitReport(req, res) {
-  const { type, radioSerial, radioIdCode, radioAssignedTo, newAssignee, reporterName, reporterPosition, description, site, isOperational } = req.body;
+  const { type, radioSerial, radioIdCode, radioAssignedTo, newAssignee, requiredRadioType, reporterName, reporterPosition, description, site, isOperational } = req.body;
   const reporterEmail = req.user ? req.user.email : (req.body.reporterEmail || null);
 
   if (!type || !reporterName || !description || !site) {
@@ -264,6 +264,7 @@ export async function submitReport(req, res) {
         radioIdCode: radioIdCode ? radioIdCode.toString() : null,
         radioAssignedTo: radioAssignedTo || null,
         newAssignee: newAssignee || null,
+        requiredRadioType: requiredRadioType || null,
         reporterName,
         reporterEmail: reporterEmail || null,
         reporterPosition: reporterPosition || null,
@@ -326,6 +327,7 @@ export async function submitReport(req, res) {
                 <tr style="background-color: #f9fafb;"><td style="padding: 8px; font-weight: bold;">Reportado Por:</td><td style="padding: 8px;">${reporterName} (${reporterPosition || 'Sin puesto'})</td></tr>
                 <tr><td style="padding: 8px; font-weight: bold;">Serie del Radio:</td><td style="padding: 8px; font-weight: md; font-family: monospace;">${radioSerial || 'No especificado'}</td></tr>
                 ${newAssignee ? `<tr style="background-color: #eff6ff;"><td style="padding: 8px; font-weight: bold; color: #1e40af;">Nuevo Asignado:</td><td style="padding: 8px; font-weight: bold; color: #1e40af;">${newAssignee}</td></tr>` : ''}
+                ${requiredRadioType ? `<tr style="background-color: #f5f3ff;"><td style="padding: 8px; font-weight: bold; color: #6d28d9;">Tipo Requerido:</td><td style="padding: 8px; font-weight: bold; color: #6d28d9;">${requiredRadioType}</td></tr>` : ''}
                 <tr style="background-color: #f9fafb;"><td style="padding: 8px; font-weight: bold; vertical-align: top;">Descripción:</td><td style="padding: 8px;">${description}</td></tr>
               </table>
               <p style="margin-top: 20px; font-size: 11px; color: #666;">Este correo fue generado de forma automática por el sistema de control de radios de Desminic LL.</p>

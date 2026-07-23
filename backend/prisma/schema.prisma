@@ -148,6 +148,7 @@ model RadioReport {
   radioIdCode     String?
   radioAssignedTo String?  // Equipo/Usuario asignado al radio
   newAssignee     String?  // Nuevo personal asignado (para Cambio Asignación)
+  requiredRadioType String? // Tipo de radio requerido (Portátil, Base, Repetidora)
   reporterName    String   // Quien reporta
   reporterEmail   String?  // Correo del reportero para seguimiento del usuario
   reporterPosition String?

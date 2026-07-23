@@ -132,6 +132,11 @@ export default function AdminRadioReports() {
                             Reasignar a: <span className="text-blue-900 font-extrabold">{report.newAssignee}</span>
                           </div>
                         )}
+                        {report.requiredRadioType && (
+                          <div className="mb-1.5 text-purple-700 bg-purple-50 px-2.5 py-1 rounded text-[10px] font-bold border border-purple-200 inline-block">
+                            Tipo requerido: <span className="text-purple-900 font-extrabold">{report.requiredRadioType}</span>
+                          </div>
+                        )}
                         <p>{report.description}</p>
                       </td>
                       <td className="px-5 py-4 text-center whitespace-nowrap">
