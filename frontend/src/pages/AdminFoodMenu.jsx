@@ -300,6 +300,25 @@ export default function AdminFoodMenu() {
                             {dish.sides} {dish.drink ? `· ${dish.drink}` : ''}
                           </p>
                         )}
+                        {dish.foodConfirmations && dish.foodConfirmations.length > 0 ? (
+                          <div className="mt-2 pt-2 border-t border-slate-100 space-y-1">
+                            <span className="text-[9px] font-extrabold text-blue-600 block">
+                              Asistencias ({dish.foodConfirmations.length}):
+                            </span>
+                            <div className="max-h-24 overflow-y-auto space-y-0.5 pr-1">
+                              {dish.foodConfirmations.map((conf) => (
+                                <div key={conf.id} className="text-[9px] text-slate-600 bg-white border border-slate-100 rounded p-1 flex flex-col font-medium leading-tight">
+                                  <span className="font-extrabold text-slate-800">{conf.user?.name}</span>
+                                  {conf.notes && <span className="text-[8px] text-slate-400 italic">Nota: {conf.notes}</span>}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="mt-2 pt-1 border-t border-slate-100 text-[9px] text-slate-400 font-semibold italic text-center">
+                            Sin confirmaciones
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
