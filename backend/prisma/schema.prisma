@@ -96,6 +96,8 @@ model FoodConfirmation {
   userId     Int
   user       User          @relation(fields: [userId], references: [id])
   notes      String?
+  rating     Int?          // Calificación de comida (1 a 5 estrellas)
+  opinion    String?       // Comentario u opinión del comensal
   createdAt  DateTime      @default(now())
 }
 

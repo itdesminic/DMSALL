@@ -6,8 +6,14 @@ export default function Food() {
   const { user } = useAuth()
   const [menus, setMenus] = useState([])
   const [loading, setLoading] = useState(true)
+  
+  // Confirmation states
   const [confirmingId, setConfirmingId] = useState(null)
   const [notes, setNotes] = useState('')
+
+  // Feedback states
+  const [feedbackRating, setFeedbackRating] = useState(5)
+  const [feedbackOpinion, setFeedbackOpinion] = useState('')
 
   useEffect(() => {
     fetchMenus()
@@ -25,8 +31,15 @@ export default function Food() {
     }
   }
 
-  // Get the latest published menu
-  const activeMenu = menus.find(m => m.published)
+  // Get the latest published menu that is strictly in the current week
+  const activeMenu = menus.find(m => {
+    if (!m.published) return false
+    const start = new Date(m.weekStart + 'T00:00:00')
+    const end = new Date(start)
+    end.setDate(end.getDate() + 7) // 7 days from start
+    const now = new Date()
+    return now >= start && now < end
+  })
 
   const handleConfirm = async (itemId) => {
     setConfirmingId(itemId)
@@ -46,9 +59,27 @@ export default function Food() {
     }
   }
 
-  const hasConfirmed = (confirmations) => {
-    if (!confirmations || !user) return false
-    return confirmations.some(c => c.userId === user.id)
+  const handleFeedbackSubmit = async (confirmationId) => {
+    try {
+      await api.post('/food/feedback', {
+        confirmationId,
+        rating: feedbackRating,
+        opinion: feedbackOpinion || null
+      })
+      alert('¡Gracias por compartir tu opinión sobre la comida!')
+      setFeedbackOpinion('')
+      setFeedbackRating(5)
+      setConfirmingId(null)
+      fetchMenus()
+    } catch (err) {
+      console.error(err)
+      alert('Error al registrar tu opinión.')
+    }
+  }
+
+  const getUserConfirmation = (confirmations) => {
+    if (!confirmations || !user) return null
+    return confirmations.find(c => c.userId === user.id)
   }
 
   return (
@@ -77,7 +108,7 @@ export default function Food() {
             <div>
               <span className="text-xs font-bold text-blue-500 uppercase">Menú Activo</span>
               <h2 className="text-lg font-extrabold text-slate-800">
-                Semana del {new Date(activeMenu.weekStart).toLocaleDateString('es-ES', { dateStyle: 'long' })}
+                Semana del {new Date(activeMenu.weekStart + 'T00:00:00').toLocaleDateString('es-ES', { dateStyle: 'long' })}
               </h2>
             </div>
             <p className="text-xs text-slate-500 max-w-md">
@@ -87,12 +118,12 @@ export default function Food() {
 
           {/* Group items by day */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Let's sort activeMenu.foodMenuItems by date */}
             {activeMenu.foodMenuItems && [...activeMenu.foodMenuItems]
               .sort((a, b) => new Date(a.date) - new Date(b.date))
               .map((item) => {
-                const confirmed = hasConfirmed(item.foodConfirmations)
-                const itemDate = new Date(item.date)
+                const userConf = getUserConfirmation(item.foodConfirmations)
+                const confirmed = !!userConf
+                const itemDate = new Date(item.date + 'T00:00:00')
 
                 return (
                   <div key={item.id} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm space-y-4 hover:shadow-md/5 transition flex flex-col justify-between">
@@ -120,15 +151,61 @@ export default function Food() {
 
                     <div className="border-t border-slate-100 pt-4 mt-2">
                       {confirmed ? (
-                        <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl p-2.5 text-center text-xs font-bold flex items-center justify-center gap-1.5">
-                          ✓ Asistencia Confirmada
+                        <div className="bg-emerald-50 border border-emerald-250 text-emerald-800 rounded-xl p-3 text-xs space-y-2.5">
+                          <div className="text-center font-extrabold flex items-center justify-center gap-1.5">
+                            ✓ Asistencia Confirmada
+                          </div>
+                          
+                          {userConf.rating ? (
+                            <div className="mt-2 pt-2 border-t border-emerald-200/50 space-y-1 text-[11px] text-slate-750 font-medium">
+                              <span className="font-extrabold text-slate-500 block text-[9px] uppercase">Tu Opinión:</span>
+                              <div className="text-amber-500 text-xs">{'⭐'.repeat(userConf.rating)}</div>
+                              {userConf.opinion && <p className="italic text-slate-650 bg-white border border-slate-100 rounded p-1.5 mt-1">"{userConf.opinion}"</p>}
+                            </div>
+                          ) : (
+                            <div className="mt-2 pt-2 border-t border-emerald-200/50 space-y-2 text-slate-800 font-semibold">
+                              <span className="font-extrabold text-slate-500 block text-[9px] uppercase">Dejar Opinión:</span>
+                              <div className="flex gap-1 justify-center">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                  <button
+                                    key={star}
+                                    type="button"
+                                    onClick={() => {
+                                      setConfirmingId(item.id)
+                                      setFeedbackRating(star)
+                                    }}
+                                    className="text-base hover:scale-125 transition"
+                                  >
+                                    {(confirmingId === item.id ? feedbackRating : 5) >= star ? '⭐' : '☆'}
+                                  </button>
+                                ))}
+                              </div>
+                              <input
+                                type="text"
+                                placeholder="¿Qué tal estuvo la comida?"
+                                value={confirmingId === item.id ? feedbackOpinion : ''}
+                                onChange={(e) => {
+                                  setConfirmingId(item.id)
+                                  setFeedbackOpinion(e.target.value)
+                                }}
+                                className="w-full rounded-lg border border-slate-200 bg-white p-1.5 text-xs text-slate-800 font-normal focus:bg-white transition"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => handleFeedbackSubmit(userConf.id)}
+                                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] py-1.5 rounded-lg shadow-sm transition"
+                              >
+                                Enviar Opinión
+                              </button>
+                            </div>
+                          )}
                         </div>
                       ) : (
                         <div className="space-y-2">
                           <input
                             type="text"
                             placeholder="Notas opcionales (ej: sin chile, alergia)..."
-                            value={confirmingId === item.id ? notes : ''}
+                            value={confirmingId === item.id && feedbackRating === 5 && !feedbackOpinion ? notes : ''}
                             onChange={(e) => {
                               setConfirmingId(item.id)
                               setNotes(e.target.value)
@@ -140,7 +217,7 @@ export default function Food() {
                             disabled={confirmingId !== null && confirmingId !== item.id}
                             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2 rounded-xl shadow-sm transition"
                           >
-                            {confirmingId === item.id ? 'Confirmando...' : 'Confirmar Asistencia'}
+                            {confirmingId === item.id && notes ? 'Confirmando...' : 'Confirmar Asistencia'}
                           </button>
                         </div>
                       )}
@@ -151,7 +228,7 @@ export default function Food() {
           </div>
         </div>
       ) : (
-        <div className="text-center py-20 text-slate-400 text-xs font-medium border border-slate-200 rounded-2xl bg-white">
+        <div className="text-center py-20 text-slate-400 text-xs font-medium border border-slate-200 rounded-2xl bg-white shadow-sm">
           No hay ningún menú semanal publicado y activo en este momento.
         </div>
       )}

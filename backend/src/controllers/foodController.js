@@ -64,3 +64,35 @@ export async function confirmFood(req, res) {
     res.status(500).json({ error: 'Error confirmando comida' });
   }
 }
+
+export async function submitFeedback(req, res) {
+  const { confirmationId, rating, opinion } = req.body;
+  const userId = req.user?.userId;
+
+  if (!confirmationId || !rating) {
+    return res.status(400).json({ error: 'confirmationId y rating son requeridos.' });
+  }
+
+  try {
+    const confirmation = await prisma.foodConfirmation.findFirst({
+      where: { id: parseInt(confirmationId, 10), userId }
+    });
+
+    if (!confirmation) {
+      return res.status(404).json({ error: 'Confirmación de comida no encontrada.' });
+    }
+
+    const updated = await prisma.foodConfirmation.update({
+      where: { id: confirmation.id },
+      data: {
+        rating: parseInt(rating, 10),
+        opinion: opinion || null
+      }
+    });
+
+    res.json(updated);
+  } catch (err) {
+    console.error('Error al registrar opinión:', err);
+    res.status(500).json({ error: 'Error al registrar opinión de comida.' });
+  }
+}
