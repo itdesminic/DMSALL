@@ -304,7 +304,7 @@ export default function AdminFoodMenu() {
                     <div>
                       <span className="text-[10px] font-bold text-slate-400 uppercase">Semana del</span>
                       <h3 className="text-sm font-extrabold text-slate-850">
-                        {new Date(menu.weekStart + 'T00:00:00').toLocaleDateString('es-ES', { dateStyle: 'medium' })}
+                        {new Date(menu.weekStart).toLocaleDateString('es-ES', { dateStyle: 'medium' })}
                       </h3>
                     </div>
                     <div className="flex gap-1.5 items-center">
@@ -365,7 +365,7 @@ export default function AdminFoodMenu() {
             <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50 print:hidden">
               <div>
                 <h2 className="text-lg font-bold text-slate-950">📊 Reporte de Asistencia al Comedor</h2>
-                <p className="text-xs text-slate-500">Semana del {new Date(showReportMenu.weekStart + 'T00:00:00').toLocaleDateString('es-ES', { dateStyle: 'long' })}</p>
+                <p className="text-xs text-slate-500">Semana del {new Date(showReportMenu.weekStart).toLocaleDateString('es-ES', { dateStyle: 'long' })}</p>
               </div>
               <div className="flex items-center gap-2">
                 <button
@@ -385,11 +385,10 @@ export default function AdminFoodMenu() {
 
             {/* Modal Body / Report Document */}
             <div className="p-6 overflow-y-auto space-y-6 print:p-0 print:overflow-visible">
-              
               {/* Document Header for Printing */}
               <div className="hidden print:block text-center space-y-2 border-b border-slate-300 pb-4 mb-4">
                 <h1 className="text-xl font-bold text-slate-900">REPORTE DE ASISTENCIA AL COMEDOR</h1>
-                <p className="text-sm font-bold text-slate-700">Semana del: {new Date(showReportMenu.weekStart + 'T00:00:00').toLocaleDateString('es-ES', { dateStyle: 'long' })}</p>
+                <p className="text-sm font-bold text-slate-700">Semana del: {new Date(showReportMenu.weekStart).toLocaleDateString('es-ES', { dateStyle: 'long' })}</p>
                 <p className="text-xs text-slate-500">Desminic LL — Portal de Servicios Generales</p>
               </div>
 
